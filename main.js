@@ -12,7 +12,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 app.use('/api/v1/user', userRouter);
 
-app.all((req, res, next) => {
+app.all("*", (req, res, next) => {
   res.send('this route does not found');
 });
 app.use(handleError);

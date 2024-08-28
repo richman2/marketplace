@@ -13,17 +13,45 @@ export const User = sequelize.define(
     firstName: {
       type: DataTypes.STRING,
       allowNull: false,
+      validate: {
+        notEmpty: {
+          msg: 'نام نمیتواند خالی باشد',
+        },
+        notNull: {
+          msg: 'لطفا نام معتبر وارد کنید',
+        },
+      },
     },
     lastName: {
       type: DataTypes.STRING,
       allowNull: false,
+      validate: {
+        notEmpty: {
+          msg: 'نام خانوادگی نمیتواند خالی باشد',
+        },
+        notNull: {
+          msg: 'لطفا نام خانوادگی معتبر وارد کنید',
+        },
+      },
     },
     username: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
       validate: {
-        isLowercase: true,
+        isLowercase: {
+          msg: 'نام کاربری باید با حروف کوچک باشد',
+        },
+      },
+    },
+    email: {
+      type: DataTypes.STRING,
+      unique: true,
+      allowNull: false,
+      validate: {
+        isEmail: {
+          msg: 'لطفا یک ایمیل معتبر وارد کنید',
+        },
       },
     },
     password: {
@@ -57,6 +85,7 @@ export const User = sequelize.define(
     },
   },
   {
+    indexes: [{ unique: true, fields: ['userId'] }],
     tableName: 'Users',
     hooks: {
       beforeCreate: async function (record, option) {
@@ -65,4 +94,3 @@ export const User = sequelize.define(
     },
   }
 );
-
