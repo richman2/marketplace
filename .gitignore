@@ -1,0 +1,9 @@
+node_modules
+config.env
+*.log
+*.pid
+*.seed
+.eslintcache
+.npm
+.tgz
+.node_repl_history
