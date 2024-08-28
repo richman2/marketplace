@@ -20,6 +20,12 @@ export default function handleError(err, req, res, next) {
     case "SequelizeValidationError":
       error = validationErrorHandle(err);
       break;
+    case "TokenExpiredError":
+      error = new ErrorApi("Token expired", 400);
+      break;
+    case "JsonWebTokenError":
+      error = new ErrorApi("Provide a valid token", 400);
+      break;
     default:
       error = err;
   }
