@@ -20,9 +20,10 @@ export default function handleError(err, req, res, next) {
     case "SequelizeValidationError":
       error = validationErrorHandle(err);
       break;
+    default:
+      error = err;
   }
-
-  res.status(error?.status || 500).json({
-    error: error?.message,
+  res.status(error.status || 500).json({
+    error: error.message,
   });
 }
