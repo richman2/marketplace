@@ -1,11 +1,11 @@
 import { DataTypes } from 'sequelize';
-import { sequelize } from './index.js';
+import { sequelize } from './db.js';
 import bcrypt from 'bcrypt';
 
 export const User = sequelize.define(
   'User',
   {
-    userId: {
+    _userId: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
