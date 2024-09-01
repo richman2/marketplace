@@ -5,18 +5,19 @@ import { Product } from "./productModel.js";
 export const Category = sequelize.define("Category", {
   _categoryId: {
     type: DataTypes.INTEGER,
-    allowNull: true,
     primaryKey: true,
+    allowNull: true,
     autoIncrement: true,
   },
   categoryName: {
     type: DataTypes.STRING,
     allowNull: false,
+    unique: true,
   },
   description: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
     allowNull: false,
   },
 });
 
-Category.hasMany(Product);
+Category.hasMany(Product, { foreignKey: "_categoryId" });

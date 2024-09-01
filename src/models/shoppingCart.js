@@ -5,9 +5,8 @@ import { Buyer } from "./buyerModel.js";
 
 export const ShoppingCart = sequelize.define("Cart", {
   _cartId: {
-    primaryKey: true,
     type: DataTypes.INTEGER,
-    allowNull: false,
+    primaryKey: true,
     autoIncrement: true,
   },
   bueryId: {

@@ -5,8 +5,8 @@ import { Invoice } from "./invoiceModel.js";
 export const Order = sequelize.define("Order", {
   _orderId: {
     type: DataTypes.INTEGER,
-    allowNull: false,
     primaryKey: true,
+    allowNull: false,
     autoIncrement: true,
   },
   orderDate: {

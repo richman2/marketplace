@@ -5,8 +5,8 @@ import { Seller } from "./sellerModel.js";
 export const Product = sequelize.define("Product", {
   productId: {
     type: DataTypes.INTEGER,
-    autoIncrement: true,
     primaryKey: true,
+    autoIncrement: true,
   },
   productName: {
     type: DataTypes.STRING(40),
@@ -31,6 +31,6 @@ export const Product = sequelize.define("Product", {
     type: DataTypes.STRING,
   },
 });
+Seller.hasMany(Product, { foreignKey: "_sellerId" });
 
-Seller.hasMany(Product);
-Product.belongsTo(Seller);
+Product.belongsTo(Seller, { foreignKey: "_sellerId" });

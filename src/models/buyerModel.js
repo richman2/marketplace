@@ -6,6 +6,8 @@ import { Invoice } from "./invoiceModel.js";
 export const Buyer = sequelize.define("Buyer", {
   _buerId: {
     type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
     allowNull: false,
     references: {
       model: User,

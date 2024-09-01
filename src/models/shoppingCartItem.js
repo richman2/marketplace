@@ -4,9 +4,8 @@ import { sequelize } from "./db.js";
 export const CartItems = sequelize.define("CartItem", {
   _cartItemId: {
     type: DataTypes.INTEGER,
-    autoIncrement: true,
-    allowNull: false,
     primaryKey: true,
+    autoIncrement: true,
   },
   quantity: {
     type: DataTypes.INTEGER,
@@ -17,4 +16,3 @@ export const CartItems = sequelize.define("CartItem", {
     allowNull: false,
   },
 });
-

@@ -1,24 +1,24 @@
-import { DataTypes } from 'sequelize';
-import { sequelize } from './db.js';
-import bcrypt from 'bcrypt';
+import { DataTypes } from "sequelize";
+import { sequelize } from "./db.js";
+import bcrypt from "bcrypt";
 
 export const User = sequelize.define(
-  'User',
+  "User",
   {
     _userId: {
       type: DataTypes.INTEGER,
-      autoIncrement: true,
       primaryKey: true,
+      autoIncrement: true,
     },
     firstName: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
         notEmpty: {
-          msg: 'نام نمیتواند خالی باشد',
+          msg: "نام نمیتواند خالی باشد",
         },
         notNull: {
-          msg: 'لطفا نام معتبر وارد کنید',
+          msg: "لطفا نام معتبر وارد کنید",
         },
       },
     },
@@ -27,10 +27,10 @@ export const User = sequelize.define(
       allowNull: false,
       validate: {
         notEmpty: {
-          msg: 'نام خانوادگی نمیتواند خالی باشد',
+          msg: "نام خانوادگی نمیتواند خالی باشد",
         },
         notNull: {
-          msg: 'لطفا نام خانوادگی معتبر وارد کنید',
+          msg: "لطفا نام خانوادگی معتبر وارد کنید",
         },
       },
     },
@@ -40,7 +40,7 @@ export const User = sequelize.define(
       unique: true,
       validate: {
         isLowercase: {
-          msg: 'نام کاربری باید با حروف کوچک باشد',
+          msg: "نام کاربری باید با حروف کوچک باشد",
         },
       },
     },
@@ -50,7 +50,7 @@ export const User = sequelize.define(
       allowNull: false,
       validate: {
         isEmail: {
-          msg: 'لطفا یک ایمیل معتبر وارد کنید',
+          msg: "لطفا یک ایمیل معتبر وارد کنید",
         },
       },
     },
@@ -65,7 +65,7 @@ export const User = sequelize.define(
       validate: {
         isEqual(value) {
           if (value !== this.password) {
-            throw new Error('رمز عبور وارد شده یکسان نمیباشد');
+            throw new Error("رمز عبور وارد شده یکسان نمیباشد");
           }
         },
       },
@@ -77,16 +77,16 @@ export const User = sequelize.define(
     role: {
       type: DataTypes.STRING(10),
       Selection: false,
-      defaultValue: 'user',
+      defaultValue: "user",
     },
     status: {
       type: DataTypes.STRING(20),
-      defaultValue: 'unknown',
+      defaultValue: "unknown",
     },
   },
   {
-    indexes: [{ unique: true, fields: ['userId'] }],
-    tableName: 'Users',
+    indexes: [{ unique: true, fields: ["_userId"] }],
+    tableName: "Users",
     hooks: {
       beforeCreate: async function (record, option) {
         record.password = await bcrypt.hash(record.password, 12);

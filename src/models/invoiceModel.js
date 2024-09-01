@@ -14,8 +14,8 @@ export const Invoice = sequelize.define("Invoice", {
   dueDate: {
     type: DataTypes.DATE,
   },
-  totalAmount:{
-    type: DataTypes.INTEGER
+  totalAmount: {
+    type: DataTypes.INTEGER,
   },
   paymentDate: {
     type: DataTypes.DATE,
@@ -24,4 +24,3 @@ export const Invoice = sequelize.define("Invoice", {
     type: DataTypes.STRING,
   },
 });
-
