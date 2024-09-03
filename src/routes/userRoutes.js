@@ -1,7 +1,7 @@
 import express from "express";
-import { getMe, login, protect, signUp } from "../controller/auth/authentication.js";
-export const router = express.Router();
+import { getMe } from "../controller/users/userController.js";
+import { protect } from "../controller/guard/protect.js";
 
-router.post("/signup", signUp);
-router.post("/login", login);
-router.get("/getme", protect, getMe);
+export const userRouter = express.Router();
+
+userRouter.get("/me", protect, getMe);

@@ -50,25 +50,4 @@ export const login = catchAsync(async (req, res, next) => {
   });
 });
 
-export const protect = catchAsync(async (req, res, next) => {
-  // check if request contain jwt token
-  const authHeaderCheck = req.headers?.authorization?.includes("Bearer");
-  if (!authHeaderCheck) return next(new ErrorApi("Unauthorized", 401));
-  const [, token] = req.headers.authorization.split(" ");
-  
-  const verify = jsonwebtoken.verify(token, "secretKey");
 
-  req.user = verify.data;
-  next();
-});
-
-export const getMe = catchAsync(async (req, res, next) => {
-  const user = await User.findAll({
-    where: { userId: req.user.id },
-    attributes: { exclude: ["password", "createdAt", "updatedAt"] },
-  });
-
-  res.status(200).json({
-    data: user,
-  });
-});

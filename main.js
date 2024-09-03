@@ -1,7 +1,7 @@
 import express from "express";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
-import { router as userRouter } from "./src/routes/userRoutes.js";
+import { authRouter } from "./src/routes/authRoutes.js";
 import { catRouter } from "./src/routes/categoryRoutes.js";
 import handleError from "./src/errorHandling.js";
 import redis from "ioredis";
@@ -9,6 +9,7 @@ import morgan from "morgan";
 import cors from "cors";
 import { prodRouter } from "./src/routes/productRoutes.js";
 import dotenv from "dotenv";
+import { userRouter } from "./src/routes/userRoutes.js";
 dotenv.config({ path: "./config.env" });
 export const app = express();
 
@@ -32,8 +33,8 @@ app.options(
 );
 app.use("/api/v1/category", catRouter);
 app.use("/api/v1/product", prodRouter);
-app.use("/api/v1/user", userRouter);
-
+app.use("/api/v1/auth", authRouter);
+app.use('api/v1/user', userRouter)
 app.all("*", (req, res, next) => {
   res.send("this route does not found");
 });

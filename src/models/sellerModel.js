@@ -2,7 +2,6 @@ import { sequelize } from "./db.js";
 import { DataTypes } from "sequelize";
 import { User } from "./userModel.js";
 import { Invoice } from "./invoiceModel.js";
-import { Product } from "./productModel.js";
 export const Seller = sequelize.define("Seller", {
   _sellerId: {
     type: DataTypes.INTEGER,
@@ -28,7 +27,7 @@ export const Seller = sequelize.define("Seller", {
   storePhone: {
     type: DataTypes.STRING,
   },
-  verificationStatu: {
+  verificationStatus: {
     type: DataTypes.STRING,
   },
   totalSales: {
