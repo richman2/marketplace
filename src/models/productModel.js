@@ -3,13 +3,14 @@ import { sequelize } from "./db.js";
 import { Seller } from "./sellerModel.js";
 
 export const Product = sequelize.define("Product", {
-  productId: {
+  _productId: {
     type: DataTypes.INTEGER,
     primaryKey: true,
+    allowNull: false,
     autoIncrement: true,
   },
   productName: {
-    type: DataTypes.STRING(40),
+    type: DataTypes.STRING,
     allowNull: false,
   },
   description: {
@@ -21,7 +22,7 @@ export const Product = sequelize.define("Product", {
     allowNull: false,
   },
   stockQuantity: {
-    type: DataTypes.STRING(3),
+    type: DataTypes.STRING,
     allowNull: false,
   },
   imagePath: {
@@ -31,6 +32,6 @@ export const Product = sequelize.define("Product", {
     type: DataTypes.STRING,
   },
 });
-Seller.hasMany(Product, { foreignKey: "_sellerId" });
 
-Product.belongsTo(Seller, { foreignKey: "_sellerId" });
+Product.belongsTo(Seller, { foreignKey: "_sellerId", onDelete: "CASCADE", onUpdate: "CASCADE" });
+Seller.hasMany(Product, { foreignKey: "_sellerId" });

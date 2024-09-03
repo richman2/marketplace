@@ -1,15 +1,18 @@
 import express from "express";
-// import session from "express-session";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { router as userRouter } from "./src/routes/userRoutes.js";
-import { catRoutes } from "./src/routes/categoryRoutes.js";
+import { catRouter } from "./src/routes/categoryRoutes.js";
 import handleError from "./src/errorHandling.js";
 import redis from "ioredis";
 import morgan from "morgan";
+import cors from "cors";
+import { prodRouter } from "./src/routes/productRoutes.js";
+import dotenv from "dotenv";
+dotenv.config({ path: "./config.env" });
 export const app = express();
 
-export const redisClient = new redis({ host: "192.168.1.4", port: "6379" });
+export const redisClient = new redis({ host: process.env.HOST, port: "6379" });
 redisClient.on("connect", () => {
   console.log("connected");
 });
@@ -20,7 +23,15 @@ app.use(express.json());
 app.use(morgan("dev"));
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-app.use("/api/v1/category", catRoutes);
+app.options(
+  "*",
+  cors({
+    credentials: true,
+    origin: ["*"], // Whitelist the domains you want to allow
+  })
+);
+app.use("/api/v1/category", catRouter);
+app.use("/api/v1/product", prodRouter);
 app.use("/api/v1/user", userRouter);
 
 app.all("*", (req, res, next) => {

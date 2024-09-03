@@ -2,16 +2,13 @@ import { sequelize } from "./db.js";
 import { DataTypes } from "sequelize";
 import { User } from "./userModel.js";
 import { Invoice } from "./invoiceModel.js";
-
+import { Product } from "./productModel.js";
 export const Seller = sequelize.define("Seller", {
   _sellerId: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true,
-    references: {
-      model: User,
-      key: "_userId",
-    },
+    allowNull: false
   },
   storeName: {
     type: DataTypes.STRING,
@@ -39,6 +36,6 @@ export const Seller = sequelize.define("Seller", {
   },
 });
 
-User.hasOne(Seller);
-Seller.belongsTo(User);
+User.hasOne(Seller, { foreignKey: "_userId" });
+Seller.belongsTo(User, { foreignKey: "_userId" });
 Seller.hasMany(Invoice);

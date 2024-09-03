@@ -6,6 +6,7 @@ const duplicationErrorHandle = (err, res) => {
 };
 
 const validationErrorHandle = (err, res) => {
+  console.log(err);
   let error = new ErrorApi(`${err.errors[0]["message"]}`, 400);
   if (err.errors[0]["type"].includes("notNull")) error = new ErrorApi("لطفا تمامی فیلد ها را پر کنید", 400);
   return error;

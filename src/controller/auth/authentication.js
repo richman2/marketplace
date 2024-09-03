@@ -5,6 +5,8 @@ import ErrorApi from "../../utils/errorApi.js";
 import bcrypt from "bcrypt";
 import jsonwebtoken from "jsonwebtoken";
 import validator from "validator";
+
+
 export const signUp = catchAsync(async (req, res, next) => {
   const { firstName, lastName, username, password, passwordConfirm, email } = req.body;
   await User.create({ firstName, lastName, username, email, password, passwordConfirm });

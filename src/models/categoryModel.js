@@ -20,4 +20,4 @@ export const Category = sequelize.define("Category", {
   },
 });
 
-Category.hasMany(Product, { foreignKey: "_categoryId" });
+Category.hasMany(Product, { foreignKey: "_categoryId", onUpdate: "CASCADE" });

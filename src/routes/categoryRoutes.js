@@ -1,7 +1,17 @@
 import express from "express";
-import { addManyToCat, addOneTOCat, findAllCat } from "../controller/product/categoryController.js";
-export const catRoutes = express.Router();
+import {
+  addManyToCat,
+  addOneTOCat,
+  deleteOneCat,
+  findAllCat,
+  findOneCat,
+  updateOneCat,
+} from "../controller/product/categoryController.js";
+export const catRouter = express.Router();
 
-catRoutes.post("/add", addOneTOCat);
-catRoutes.post("/add/:many", addManyToCat);
-catRoutes.post("/", findAllCat);
+catRouter.post("/add", addOneTOCat);
+catRouter.post("/add/many", addManyToCat);
+catRouter.get("/", findAllCat);
+catRouter.get("/:id", findOneCat);
+catRouter.delete("/del/:id", deleteOneCat);
+catRouter.patch("/:id", updateOneCat);
