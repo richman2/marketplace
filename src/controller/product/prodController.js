@@ -7,10 +7,15 @@ import ErrorApi from "../../utils/errorApi.js";
 import { redisClient } from "../../../main.js";
 import { Seller } from "../../models/sellerModel.js";
 import RedisApi from "../../utils/RedisApi.js";
+import { Authorization } from "../../helper/caslAuth.js";
+import { User } from "../../models/userModel.js";
 
 const allowFields = ["productName", "description", "price", "stockQuantity", "imagePath", "status"];
 
 export const addOneProd = catchAsync(async (req, res, next) => {
+  const is_seller = await new Authorization().isSeller(User, req.user.id);
+  if (!is_seller) return next(new ErrorApi("ابتدا به عنوان فروشنده ثبت نام کنید", 403));
+
   const category = await Category.findByPk(req.params.id);
   // const [seller] = await Seller.findAll({ where: { _userId: req.user.id } });
   if (!category) return next(new ErrorApi("چنین دسته بندی وجود ندارد", 404));
@@ -21,15 +26,15 @@ export const addOneProd = catchAsync(async (req, res, next) => {
 
   const allowedFields = filterField(allowFields, req.body);
   allowedFields._categoryId = parseInt(req.params.id);
-  allowFields._sellerId = 1; //sellerId;
+  allowFields._sellerId = req.user.id; //sellerId;
 
   const product = await Product.create(allowedFields);
   const redisDataCheck = await RedisApi.findInRedis(Product.name, categoryId);
   if (redisDataCheck) {
     redisDataCheck.push(product);
-    await RedisApi.setInRedis(Product.name, categoryId, redisDataCheck, 3600);
+    await RedisApi.setInRedis({ ModelName: Product.name, uniqueId: categoryId, data: redisDataCheck, exTime: 3600 });
   } else {
-    await RedisApi.setInRedis(Product.name, categoryId, [product], 3600);
+    await RedisApi.setInRedis({ ModelName: Product.name, uniqueId: categoryId, data: [product], exTime: 3600 });
   }
   res.status(201).json({
     status: "Created",

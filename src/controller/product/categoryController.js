@@ -2,7 +2,6 @@ import { Category } from "../../models/categoryModel.js";
 import catchAsync from "../../utils/catchAsync.js";
 import ErrorApi from "../../utils/errorApi.js";
 import { addMany, addOne, deleteOneRowByKey, findAll, updateOneRow } from "../factoryFunction.js";
-import { redisClient } from "../../../main.js";
 import RedisApi from "../../utils/RedisApi.js";
 
 const allowFields = ["categoryName", "description"];
