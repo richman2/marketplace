@@ -6,6 +6,7 @@ import { Category } from "../../models/categoryModel.js";
 import ErrorApi from "../../utils/errorApi.js";
 import { redisClient } from "../../../main.js";
 import { Seller } from "../../models/sellerModel.js";
+import RedisApi from "../../utils/RedisApi.js";
 
 const allowFields = ["productName", "description", "price", "stockQuantity", "imagePath", "status"];
 
@@ -23,12 +24,12 @@ export const addOneProd = catchAsync(async (req, res, next) => {
   allowFields._sellerId = 1; //sellerId;
 
   const product = await Product.create(allowedFields);
-  const redisDataCheck = JSON.parse(await redisClient.get(`${Product.name}:${categoryId}`));
+  const redisDataCheck = await RedisApi.findInRedis(Product.name, categoryId);
   if (redisDataCheck) {
     redisDataCheck.push(product);
-    await redisClient.set(`${Product.name}:${categoryId}`, JSON.stringify(redisDataCheck));
+    await RedisApi.setInRedis(Product.name, categoryId, redisDataCheck, 3600);
   } else {
-    await redisClient.set(`${Product.name}:${categoryId}`, JSON.stringify([product]), "EX", 3600);
+    await RedisApi.setInRedis(Product.name, categoryId, [product], 3600);
   }
   res.status(201).json({
     status: "Created",
