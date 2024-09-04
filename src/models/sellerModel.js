@@ -7,13 +7,15 @@ export const Seller = sequelize.define("Seller", {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true,
-    allowNull: false
+    allowNull: false,
   },
   storeName: {
     type: DataTypes.STRING,
+    allowNull: false,
   },
   storeDescription: {
     type: DataTypes.STRING,
+    allowNull: false,
   },
   storeLogo: {
     type: DataTypes.STRING,
@@ -26,15 +28,30 @@ export const Seller = sequelize.define("Seller", {
   },
   storePhone: {
     type: DataTypes.STRING,
+    allowNull: false,
   },
   verificationStatus: {
     type: DataTypes.STRING,
+    values: ["pending", "verified", "unverified", "rejected", "suspended", "under_investicatoin"],
+    defaultValue: "pending",
+    allowNull: false,
   },
   totalSales: {
     type: DataTypes.STRING,
+    defaultValue: 0,
+    allowNull: false,
+  },
+  _userId: {
+    type: DataTypes.INTEGER,
+    unique: true, // This enforces uniqueness on _userId
+    allowNull: false,
+    references: {
+      model: User,
+      key: "_userId",
+    },
   },
 });
 
-User.hasOne(Seller, { foreignKey: "_userId" });
+User.hasOne(Seller, { foreignKey: "_userId", unique: true });
 Seller.belongsTo(User, { foreignKey: "_userId" });
-Seller.hasMany(Invoice);
+Seller.hasMany(Invoice, { foreignKey: "_sellerId" });

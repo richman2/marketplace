@@ -77,6 +77,7 @@ export const User = sequelize.define(
     role: {
       type: DataTypes.STRING(10),
       Selection: false,
+      values: ["seller", "admin", "superAdmin", "user"],
       defaultValue: "user",
     },
     status: {

@@ -38,7 +38,7 @@ export const login = catchAsync(async (req, res, next) => {
 
   // create jwt token
   const token = jsonwebtoken.sign(
-    { data: { id: user.dataValues.userId, username: user.dataValues.username } },
+    { data: { id: user.dataValues._userId, username: user.dataValues.username } },
     "secretKey",
     {
       expiresIn: "1m",

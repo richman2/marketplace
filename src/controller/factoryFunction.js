@@ -23,9 +23,12 @@ export const addMany = function (Model, allowFields) {
   });
 };
 
-export const findById = function (Model) {
+export const findById = function (Model, excludeAttr, includeAttr) {
   return catchAsync(async (req, res, next) => {
-    const model = Model.findByPk();
+    const model = await Model.findByPk(req.params.id, { attributes: { exclude: excludeAttr, include: includeAttr } });
+    res.status(200).json({
+      data: model,
+    });
   });
 };
 
@@ -45,7 +48,7 @@ export const findAll = function (Model, table) {
 export const deleteOneRowByKey = function (Model, columnName) {
   return catchAsync(async (req, res, next) => {
     const isExist = await Model.findByPk(req.params.id);
-    if (!isExist) return next(new ErrorApi("Not Found", 404));
+    if (!isExist) return next(new ErrorApi("پیدا نشد", 404));
     await Model.destroy({ where: { [columnName]: req.params.id } });
     await redisClient.del(`${Model.name}:${req.params.id}`);
     await redisClient.del(`${Model.name}`);
@@ -57,7 +60,7 @@ export const updateOneRow = function (Model, allowFields) {
   return catchAsync(async (req, res, next) => {
     const isExist = await Model.findByPk(req.params.id);
 
-    if (!isExist) return next(new ErrorApi("Not Found", 404));
+    if (!isExist) return next(new ErrorApi("پیدا نشد", 404));
     const id = Object.keys(isExist.dataValues)[0];
 
     const allowedFields = filterField(allowFields, req.body);

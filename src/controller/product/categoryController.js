@@ -5,8 +5,8 @@ import { addMany, addOne, deleteOneRowByKey, findAll, updateOneRow } from "../fa
 import { redisClient } from "../../../main.js";
 
 const allowFields = ["categoryName", "description"];
-export const addOneTOCat = addOne(Category, allowFields);
-export const addManyToCat = addMany(Category, allowFields);
+export const addOneTOCat = addOne(Category);
+export const addManyToCat = addMany(Category);
 
 export const findAllCat = findAll(Category, `${Category.name}`); // categories string will be a key in redis database
 export const findOneCat = catchAsync(async (req, res, next) => {
