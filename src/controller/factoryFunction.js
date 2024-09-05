@@ -8,6 +8,7 @@ import RedisApi from "../utils/RedisApi.js";
 export const addOne = function (Model, allowFields) {
   return catchAsync(async (req, res, next) => {
     const allowedFields = filterField(allowFields, req.body);
+    await RedisApi.deleteByKey({ ModelName: Model.name });
     const model = await Model.create(allowedFields);
     res.status(200).json(model);
   });

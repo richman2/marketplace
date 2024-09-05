@@ -11,6 +11,7 @@ import { prodRouter } from "./src/routes/productRoutes.js";
 import dotenv from "dotenv";
 import { userRouter } from "./src/routes/userRoutes.js";
 import { sellerRouter } from "./src/routes/SellerRoutes.js";
+import { cartRouter } from "./src/routes/CartRoutes.js";
 dotenv.config({ path: "./config.env" });
 export const app = express();
 
@@ -35,9 +36,9 @@ app.options(
 app.use("/api/v1/category", catRouter);
 app.use("/api/v1/product", prodRouter);
 app.use("/api/v1/auth", authRouter);
-app.use('/api/v1/user', userRouter)
-app.use('/api/v1/seller', sellerRouter)
-
+app.use("/api/v1/user", userRouter);
+app.use("/api/v1/seller", sellerRouter);
+app.use("/api/v1/cart", cartRouter);
 app.all("*", (req, res, next) => {
   res.send("this route does not found");
 });

@@ -16,3 +16,4 @@ export const CartItems = sequelize.define("CartItem", {
     allowNull: false,
   },
 });
+

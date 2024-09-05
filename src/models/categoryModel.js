@@ -18,6 +18,16 @@ export const Category = sequelize.define("Category", {
     type: DataTypes.TEXT,
     allowNull: false,
   },
+  _parentId: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    references: {
+      model: "Categories",
+      key: "_categoryId",
+    },
+  },
 });
 
 Category.hasMany(Product, { foreignKey: "_categoryId", onUpdate: "CASCADE" });
+Category.belongsTo(Category, { as: "parent", foreignKey: "_parentId" });
+Category.hasMany(Category, { as: "children", foreignKey: "_parentId" });

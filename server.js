@@ -3,12 +3,11 @@ import dotenv from "dotenv";
 import { sequelize } from "./src/models/db.js";
 dotenv.config({ path: "./config.env" });
 
-
 const PORT = process.env.PORT || 3000;
 sequelize
   .sync({ force: true, alter: true })
   .then(async () => {
-    await redisClient.flushall()
+    await redisClient.flushall();
     console.log("connected");
     app.listen(3000, () => {
       console.log("server is run");

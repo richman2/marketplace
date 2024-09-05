@@ -6,7 +6,6 @@ import bcrypt from "bcrypt";
 import jsonwebtoken from "jsonwebtoken";
 import validator from "validator";
 
-
 export const signUp = catchAsync(async (req, res, next) => {
   const { firstName, lastName, username, password, passwordConfirm, email } = req.body;
   await User.create({ firstName, lastName, username, email, password, passwordConfirm });
@@ -32,7 +31,7 @@ export const login = catchAsync(async (req, res, next) => {
 
   if (!user) return next(new ErrorApi("چنین مشخصاتی در سیستم وجود ندارد. لطفا ثبت نام کنید و بعد وارد شوید"), 400);
   // check if password is correct
-  const compare = await bcrypt.compare(password, user.dataValues.password);
+  const compare = await bcrypt.compare(password, user.get("password"));
   if (!compare) return next(new ErrorApi("رمز عبور اشتباه میباشد"), 400);
   user.dataValues.password = undefined;
 
@@ -49,5 +48,3 @@ export const login = catchAsync(async (req, res, next) => {
     token,
   });
 });
-
-
