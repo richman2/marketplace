@@ -3,7 +3,7 @@ import { redisClient } from "../../main.js";
 class Redis {
   constructor() {}
   async findInRedis(obj) {
-    if (obj.uniqueId) return JSON.parse(await redisClient.get(`${obj.ModelName.name}:${obj.uniqueId}`));
+    if (obj.uniqueId) return JSON.parse(await redisClient.get(`${obj.ModelName}:${obj.uniqueId}`));
     return JSON.parse(await redisClient.get(obj.ModelName));
   }
   setInRedis(obj) {

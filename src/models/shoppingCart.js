@@ -9,24 +9,18 @@ export const ShoppingCart = sequelize.define("Cart", {
     primaryKey: true,
     autoIncrement: true,
   },
-  itemCount: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    defaultValue: 0,
-  },
   payablePrice: {
     // total price with discount
     type: DataTypes.INTEGER,
     allowNull: false,
     defaultValue: 0,
   },
-  itemsDiscount: {
+  discount: {
     // discount
     type: DataTypes.INTEGER,
-    allowNull: false,
     defaultValue: 0,
   },
-  wdPrice: {
+  totalPrice: {
     // total price without discount
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -34,8 +28,13 @@ export const ShoppingCart = sequelize.define("Cart", {
   },
 });
 
-ShoppingCart.belongsToMany(Product, { through: CartItems, foreignKey: "_productId" });
-ShoppingCart.belongsToMany(CartItems, { through: CartItems, foreignKey: "_cartId" });
+// ShoppingCart.hasMany(CartItems, { foreignKey: "_cartId", unique: true });
+// CartItems.belongsTo(ShoppingCart, { foreignKey: "_cartId" });
+// Product.hasOne(CartItems, { foreignKey: "_productId" });
+// CartItems.belongsTo(Product, { foreignKey: "_productId" });
+ShoppingCart.belongsToMany(Product, { through: CartItems, foreignKey: "_cartId" });
+Product.belongsToMany(ShoppingCart, { through: CartItems, foreignKey: "_productId" });
+// ShoppingCart.belongsToMany(CartItems, { through: CartItems});
 ShoppingCart.belongsTo(User, { foreignKey: "_userId" });
 User.hasOne(ShoppingCart, { foreignKey: "_userId" });
 ShoppingCart.belongsTo(User, { foreignKey: "_userId" });

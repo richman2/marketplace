@@ -72,3 +72,7 @@ export const updateOneRow = function (Model, allowFields) {
     res.status(200).json({ updatedValue });
   });
 };
+
+export const restoreDeletedRow = (Model, action) => {
+  return Model.restore(action);
+};
