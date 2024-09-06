@@ -9,11 +9,11 @@ const allowFields = ["storeName", "storeDescription", "storeLogo", "paymentDetai
 export const createSeller = catchAsync(async (req, res, next) => {
   const allowedFields = filterField(allowFields, req.body);
 
-  const seller = await req.user.createSeller(allowedFields);
+  // const seller = await req.user.createSeller(allowedFields);
 
-  await User.update({ role: "seller" }, { where: { _userId: seller.get("_userId") } });
-  await RedisApi.deleteByKey({ ModelName: User.name, uniqueId: req.user.get("_userId") });
-
+  // await User.update({ role: "seller" }, { where: { _userId: seller.get("_userId") } });
+  // await RedisApi.deleteByKey({ ModelName: User.name, uniqueId: req.user.get("_userId") });
+  const seller = await Seller.create(allowedFields);
   res.status(200).json({
     data: seller,
   });

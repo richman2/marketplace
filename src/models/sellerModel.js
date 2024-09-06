@@ -43,8 +43,8 @@ export const Seller = sequelize.define("Seller", {
   },
   _userId: {
     type: DataTypes.INTEGER,
-    unique: true, // This enforces uniqueness on _userId
-    allowNull: false,
+    //unique: true, // This enforces uniqueness on _userId
+    //allowNull: false,
     references: {
       model: User,
       key: "_userId",
@@ -52,6 +52,6 @@ export const Seller = sequelize.define("Seller", {
   },
 });
 
-User.hasOne(Seller, { foreignKey: "_userId", unique: true });
+User.hasOne(Seller, { foreignKey: "_userId" });
 Seller.belongsTo(User, { foreignKey: "_userId" });
 Seller.hasMany(Invoice, { foreignKey: "_sellerId" });

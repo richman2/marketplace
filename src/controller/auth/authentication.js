@@ -40,7 +40,7 @@ export const login = catchAsync(async (req, res, next) => {
     { data: { id: user.dataValues._userId, username: user.dataValues.username } },
     "secretKey",
     {
-      expiresIn: "1m",
+      expiresIn: "3m",
     }
   );
   res.status(200).json({
