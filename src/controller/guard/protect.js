@@ -10,5 +10,12 @@ export const protect = catchAsync(async (req, res, next) => {
 
   const verify = jsonwebtoken.verify(token, "secretKey");
   req.user = await User.findByPk(verify.data.id);
+  
+  const isThereCart = await req.user.getCart();
+  req.cart = isThereCart;
+  if (!isThereCart) {
+    const createdCart = await req.user.createCart();
+    req.cart = createdCart;
+  }
   next();
 });

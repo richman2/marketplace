@@ -1,9 +1,11 @@
 import express from "express";
-import { addToCart, createCartIfDoesNotExist, getCarts, updateCart } from "../controller/users/shopCartController.js";
+import { addToCart, getCarts, updateCart } from "../controller/users/shopCartController.js";
 import { protect } from "../controller/guard/protect.js";
+import { deleteRedisCache } from "../helper/redisHelper.js";
+import { ShoppingCart } from "../models/shoppingCart.js";
 
 export const cartRouter = express.Router();
 
-cartRouter.post("/add-to-cart", protect, createCartIfDoesNotExist, addToCart);
-cartRouter.patch("/updateCartItem", protect, createCartIfDoesNotExist, updateCart);
-cartRouter.get("/getCarts", protect, createCartIfDoesNotExist, getCarts);
+cartRouter.post("/add-to-cart", protect, deleteRedisCache(ShoppingCart), addToCart);
+cartRouter.patch("/updateCartItem", protect, deleteRedisCache(ShoppingCart), updateCart);
+cartRouter.get("/getCarts", protect, getCarts);

@@ -8,21 +8,12 @@ import RedisApi from "../../utils/RedisApi.js";
 import ErrorApi from "../../utils/errorApi.js";
 import { sequelize } from "../../models/db.js";
 
-export const createCartIfDoesNotExist = catchAsync(async (req, res, next) => {
-  const isThereCart = await req.user.getCart();
-  req.cart = isThereCart;
-  if (!isThereCart) {
-    const createdCart = await req.user.createCart();
-    req.cart = createdCart;
-  }
-  next();
-});
 
 export const addToCart = catchAsync(async (req, res, next) => {
   const product = await Product.findByPk(req.body._productId);
 
   if (!product) return next(new ErrorApi("چنین محصولی وجود ندارد"));
-  await RedisApi.deleteByKey({ ModelName: ShoppingCart.name, uniqueId: req.user.get("_userId") });
+  //await RedisApi.deleteByKey({ ModelName: ShoppingCart.name, uniqueId: req.user.get("_userId") });
   const existCechk = await req.cart.getProducts({ where: { _productId: req.body._productId } });
   if (existCechk.length) return next(new ErrorApi("محصول در سبد خرید وجود دارد", 400));
   const [item] = await req.cart.addProduct(product, { through: { price: product.get("price"), quantity: 1 } });
@@ -39,7 +30,7 @@ export const updateCart = catchAsync(async (req, res, next) => {
   
   if (!req.body.id) return next(new ErrorApi("لطفا آیدی محصول را ارسال کنید"));
   if (!req.body.side) return next(new ErrorApi("کاهش یا افزایش دادن محصول را مشخص کنید"));
-  await RedisApi.deleteByKey({ ModelName: ShoppingCart.name, uniqueId: req.user.get("_userId") });
+  //await RedisApi.deleteByKey({ ModelName: ShoppingCart.name, uniqueId: req.user.get("_userId") });
   if (req.body.side === "up") {
     await CartItems.update(
       { price: sequelize.literal(`price * 2`), quantity: sequelize.literal("quantity + 1") },

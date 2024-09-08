@@ -32,8 +32,8 @@ export const ShoppingCart = sequelize.define("Cart", {
 // CartItems.belongsTo(ShoppingCart, { foreignKey: "_cartId" });
 // Product.hasOne(CartItems, { foreignKey: "_productId" });
 // CartItems.belongsTo(Product, { foreignKey: "_productId" });
-ShoppingCart.belongsToMany(Product, { through: CartItems, foreignKey: "_cartId" });
-Product.belongsToMany(ShoppingCart, { through: CartItems, foreignKey: "_productId" });
+ShoppingCart.belongsToMany(Product, { through: CartItems, foreignKey: "_cartId", onDelete: "CASCADE" });
+Product.belongsToMany(ShoppingCart, { through: CartItems, foreignKey: "_productId", onDelete: "CASCADE" });
 // ShoppingCart.belongsToMany(CartItems, { through: CartItems});
 ShoppingCart.belongsTo(User, { foreignKey: "_userId" });
 User.hasOne(ShoppingCart, { foreignKey: "_userId" });

@@ -33,7 +33,8 @@ export const addOneProd = catchAsync(async (req, res, next) => {
     await RedisApi.setInRedis({ ModelName: Product.name, uniqueId: categoryId, data: [createdProduct], exTime: 3600 });
   }
   res.status(201).json({
-    status: "Created",
+    status: 200,
+    data: { createdProduct },
   });
 });
 
