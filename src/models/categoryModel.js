@@ -31,6 +31,7 @@ export const Category = sequelize.define(
   },
   {
     paranoid: true,
+    indexes: [{ unique: true, fields: ["categoryName"] }],
   }
 );
 

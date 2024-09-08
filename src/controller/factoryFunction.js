@@ -33,7 +33,12 @@ export const findById = function (Model, excludeAttr, includeAttr) {
     });
   });
 };
-
+export const findByName = function (Model, name, excludeAttr, includeAttr) {
+  return catchAsync(async (req, res, next) => {
+    const model = await Model.findOne({ where: { [name]: req.params.name } });
+    res.status(200).json({ data: model });
+  });
+};
 export const findAll = function (Model, ModelName) {
   return catchAsync(async (req, res, next) => {
     const cached = await RedisApi.findInRedis({ ModelName });
@@ -49,8 +54,16 @@ export const findAll = function (Model, ModelName) {
 
 export const deleteOneRowByKey = function (Model, columnName) {
   return catchAsync(async (req, res, next) => {
-    const isExist = await Model.findByPk(req.params.id);
-    if (!isExist) return next(new ErrorApi("پیدا نشد", 404));
+    let doc;
+    doc = await Model.findByPk(req.params.id);
+    if (!doc) return next(new ErrorApi("پیدا نشد", 404));
+
+    if (Model.name === "Product") {
+      req.catId = doc.get("_categoryId");
+      await Model.destroy({ where: { [columnName]: req.params.id } });
+
+      return next();
+    }
     await Model.destroy({ where: { [columnName]: req.params.id } });
     await redisClient.del(`${Model.name}:${req.params.id}`);
     await redisClient.del(`${Model.name}`);
@@ -71,8 +84,4 @@ export const updateOneRow = function (Model, allowFields) {
     await RedisApi.deleteByKey({ ModelName: Model.name });
     res.status(200).json({ updatedValue });
   });
-};
-
-export const restoreDeletedRow = (Model, action) => {
-  return Model.restore(action);
 };

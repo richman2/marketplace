@@ -14,22 +14,7 @@ export const findAllChildCategory = catchAsync(async (req, res, next) => {
   if (cachedData) return res.status(200).json({ data: cachedData });
   const categories = await Category.findAll({
     where: { _parentId: null },
-    include: [
-      {
-        model: Category,
-        as: "children",
-        include: [
-          {
-            model: Category,
-            as: "children",
-            include: {
-              model: Category,
-              as: "children",
-            },
-          },
-        ],
-      },
-    ],
+    include: ["children"],
   });
   await RedisApi.setInRedis({ ModelName: Category.name, exTime: 7500, data: categories });
   res.status(200).json({ data: categories });

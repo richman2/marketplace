@@ -9,8 +9,8 @@ export const protect = catchAsync(async (req, res, next) => {
   const [, token] = req.headers.authorization.split(" ");
 
   const verify = jsonwebtoken.verify(token, "secretKey");
-  req.user = await User.findByPk(verify.data.id);
-  
+  req.user = await User.findByPk(verify.data.id, { attributes: { includes: ["role"] } });
+
   const isThereCart = await req.user.getCart();
   req.cart = isThereCart;
   if (!isThereCart) {
