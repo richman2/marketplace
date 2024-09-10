@@ -1,6 +1,10 @@
 import express from "express";
-import { login, signUp } from "../controller/auth/authentication.js";
+import { forgetPassword, login, logout, resetPasswordToken, signUp } from "../controller/auth/authentication.js";
+import { protect } from "../controller/guard/protect.js";
 export const authRouter = express.Router();
 
 authRouter.post("/signup", signUp);
 authRouter.post("/login", login);
+authRouter.post("/forgetpassword", forgetPassword);
+authRouter.post("/resetpassword/:token", resetPasswordToken);
+authRouter.post("/logout", protect, logout);

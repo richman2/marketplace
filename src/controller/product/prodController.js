@@ -17,7 +17,8 @@ export const addOneProd = catchAsync(async (req, res, next) => {
   if (!category) return next(new ErrorApi("چنین دسته بندی وجود ندارد", 404));
 
   const allowedFields = filterField(allowFields, req.body);
-  allowFields._sellerId = req.user.get("_userId");
+  allowedFields._sellerId = req.user.get("_userId");
+
   const createdProduct = await category.createProduct(allowedFields);
   req.data = createdProduct;
   next();

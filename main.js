@@ -12,9 +12,38 @@ import dotenv from "dotenv";
 import { userRouter } from "./src/routes/userRoutes.js";
 import { sellerRouter } from "./src/routes/SellerRoutes.js";
 import { cartRouter } from "./src/routes/CartRoutes.js";
+import session from "express-session";
+import expressMysqlSession from "express-mysql-session";
+("express-mysql-session");
+
 dotenv.config({ path: "./config.env" });
 export const app = express();
-
+// const MySQLStore = expressMysqlSession(session);
+// const sessionStore = new MySQLStore({
+//   host: process.env.HOST,
+//   port: 3306,
+//   user: "putty",
+//   password: process.env.PASSWORD,
+//   database: process.env.DB,
+// });
+// app.use(
+//   session({
+//     key: "sessionId",
+//     secret: "soSecretKey",
+//     store: sessionStore,
+//     resave: false,
+//     saveUninitialized: false,
+//     cookie: { httpOnly: false, maxAge: 60000, path: "/" },
+//   })
+// );
+// sessionStore
+//   .onReady()
+//   .then(() => {
+//     console.log("mysql Ready");
+//   })
+//   .catch((err) => {
+//     console.error(err.message);
+//   });
 export const redisClient = new redis({ host: process.env.HOST, port: "6379" });
 redisClient.on("connect", () => {
   console.log("connected");

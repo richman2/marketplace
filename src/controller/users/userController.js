@@ -14,3 +14,4 @@ export const getMe = catchAsync(async (req, res, next) => {
     data: user,
   });
 });
+

@@ -85,13 +85,25 @@ export const User = sequelize.define(
       type: DataTypes.STRING(20),
       defaultValue: "unknown",
     },
+    passwordResetToken: {
+      type: DataTypes.STRING,
+      Selection: false,
+    },
+    passwordResetExpire: { type: DataTypes.DATE, Selection: false },
+    passwordChangedAt: {
+      type: DataTypes.DATE,
+    },
+    logedout: { type: DataTypes.DATE },
   },
   {
     indexes: [{ unique: true, fields: ["_userId"] }],
     tableName: "Users",
     hooks: {
-      beforeCreate: async function (record, option) {
-        record.password = await bcrypt.hash(record.password, 12);
+      // beforeCreate: async function (record, option) {
+      //   record.password = await bcrypt.hash(record.password, 12);
+      // },
+      beforeSave: async function (record, option) {
+        if (record.changed("password")) record.password = await bcrypt.hash(record.password, 12);
       },
     },
   }

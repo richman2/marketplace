@@ -5,8 +5,8 @@ dotenv.config({ path: "./config.env" });
 
 const PORT = process.env.PORT || 3000;
 sequelize
-  // .sync({ force: true, alter: true })
-  // .sync({alter: true})
+  // .sync({ force: true})
+  // .sync({ alter: true })
   .sync()
   .then(async () => {
     await redisClient.flushall();

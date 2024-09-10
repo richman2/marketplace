@@ -1,37 +1,29 @@
 import { defineAbility } from "@casl/ability";
 
-
 export class Authorization {
-  constructor(user = null, document = null, model = null) {
-    this.user = user;
+  constructor(user = null, document = null, action, model = null) {
+    this.userData = user;
     this.document = document;
     this.model = model;
+    this.action = action;
   }
 
-  canDo() {
-    return this.ability().can;
+  async canDo() {
+    return this.ability().can(this.action, this.document);
   }
   ability() {
     return defineAbility((can, cannot) => {
-      switch (this.user?.role) {
+      switch (this.userData.user.role) {
         case "admin":
           can("manage", "all");
           break;
         case "user":
-          can("update", this.model?.name, { authorId: user?.id });
-          can("delete", this.model?.name, { authorId: user?.id });
-          can("read", this.model?.name, { authorId: user?.id });
+          can("update", this.model, { _userId: this.userData.user._userId });
+          can("delete", this.model, { _userId: this.userData.user._userI });
+          can("read", this.model, { _userId: this.userData.user._userI });
         case "seller":
-          can("update", this.model?.name, {});
+          can("manage", this.model, { _sellerId: this.userData?.seller?.get("_sellerId") });
       }
     });
-  }
-  async isSeller(Model, id) {
-    const  {role}  = await Model.findByPk(id, { attributes: { include: ["role"] } });
-
-    if (role !== "seller") {
-      return false;
-    }
-    return true;
   }
 }
