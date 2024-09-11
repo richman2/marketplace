@@ -1,7 +1,6 @@
 import { sequelize } from "./db.js";
 import { DataTypes } from "sequelize";
 import { User } from "./userModel.js";
-import { Invoice } from "./invoiceModel.js";
 export const Seller = sequelize.define("Seller", {
   _sellerId: {
     type: DataTypes.INTEGER,
@@ -52,6 +51,3 @@ export const Seller = sequelize.define("Seller", {
   },
 });
 
-User.hasOne(Seller, { foreignKey: "_userId", unique: true });
-Seller.belongsTo(User, { foreignKey: "_userId" });
-Seller.hasMany(Invoice, { foreignKey: "_sellerId" });

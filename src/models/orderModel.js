@@ -1,6 +1,5 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "./db.js";
-import { Invoice } from "./invoiceModel.js";
 
 export const Order = sequelize.define("Order", {
   _orderId: {
@@ -24,6 +23,9 @@ export const Order = sequelize.define("Order", {
   paymenMethod: {
     type: DataTypes.STRING,
   },
+  shippingMethod: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  
 });
-
-Order.hasOne(Invoice);

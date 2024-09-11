@@ -1,13 +1,14 @@
-import { app, redisClient } from "./main.js";
 import dotenv from "dotenv";
 import { sequelize } from "./src/models/db.js";
+import { app, redisClient } from "./main.js";
+
 dotenv.config({ path: "./config.env" });
 
 const PORT = process.env.PORT || 3000;
 sequelize
-  // .sync({ force: true})
+  .sync({ force: true})
   // .sync({ alter: true })
-  .sync()
+  // .sync()
   .then(async () => {
     await redisClient.flushall();
     console.log("connected");

@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "./db.js";
 import bcrypt from "bcrypt";
-import { Invoice } from "./invoiceModel.js";
+
 
 export const User = sequelize.define(
   "User",

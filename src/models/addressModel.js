@@ -1,34 +1,31 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "./db.js";
 
-export const Product = sequelize.define("Product", {
-  _productId: {
+export const Address = sequelize.define("Address", {
+  _addressId: {
     type: DataTypes.INTEGER,
     primaryKey: true,
-    allowNull: false,
     autoIncrement: true,
-  },
-  productName: {
-    type: DataTypes.STRING,
     allowNull: false,
   },
-  description: {
+  address: {
     type: DataTypes.TEXT,
     allowNull: false,
   },
-  price: {
+  city: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  province: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  phoneNumber: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  postalCode: {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
-  stockQuantity: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  imagePath: {
-    type: DataTypes.STRING,
-  },
-  status: {
-    type: DataTypes.STRING,
-  },
 });
-

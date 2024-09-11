@@ -32,7 +32,9 @@ const createSendToken = (user, statusCode, res) => {
 };
 export const signUp = catchAsync(async (req, res, next) => {
   const { firstName, lastName, username, password, passwordConfirm, email } = req.body;
-  console.log(req.session);
+  console.log("works");
+  console.log(firstName, lastName, username, password, passwordConfirm, email);
+
   const user = await User.create({ firstName, lastName, username, email, password, passwordConfirm });
   createSendToken(user, 201, res);
 });
@@ -43,10 +45,10 @@ export const login = catchAsync(async (req, res, next) => {
 
   // check if email or username and password have value
   const usernameOrEmail = email ?? username;
-  if (!usernameOrEmail || !password) return next(new ErrorApi("لطفا ایمیل یا نام کاربری و پسورد خودت را وارد کنید"));
+  if (!usernameOrEmail || !password) return next(new ErrorApi("لطفا ایمیل یا نام کاربری و پسورد خودت را وارد کنید", 422));
 
   if (email && !validator.isEmail(email)) {
-    return next(new ErrorApi("یک ایمل معتبر وارد کنید", 400));
+    return next(new ErrorApi("یک ایمیل معتبر وارد کنید", 422));
   }
   const [user] = await User.findAll({
     where: Sequelize.or({ username: username ?? "" }, { email: email ?? "" }),
@@ -55,8 +57,7 @@ export const login = catchAsync(async (req, res, next) => {
   if (!user) return next(new ErrorApi("چنین مشخصاتی در سیستم وجود ندارد. لطفا ثبت نام کنید و بعد وارد شوید"), 400);
   // check if password is correct
   const compare = await bcrypt.compare(password, user.get("password"));
-  console.log(compare);
-  if (!compare) return next(new ErrorApi("رمز عبور اشتباه میباشد"), 400);
+  if (!compare) return next(new ErrorApi("رمز عبور اشتباه میباشد", 401));
   user.dataValues.password = undefined;
 
   createSendToken(user, 200, res);
@@ -77,7 +78,7 @@ export const updatePassword = catchAsync(async (req, res, next) => {
 });
 
 export const forgetPassword = catchAsync(async (req, res, next) => {
-  if (!req.body.email) return next(new ErrorApi("ایمیل خود را وارد کنید", 400));
+  if (!req.body.email) return next(new ErrorApi("ایمیل خود را وارد کنید", 422));
   const user = await User.findOne({ where: { email: req.body.email } });
   if (!user) {
     return next(new ErrorApi("چنین کاربری وجود ندارد", 404));

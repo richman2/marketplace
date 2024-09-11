@@ -1,9 +1,7 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "./db.js";
-import { Buyer } from "./buyerModel.js";
-import { Order } from "./orderModel.js";
 
-export const Payment = sequelize.define("Paymen", {
+export const Payment = sequelize.define("Payment", {
   _paymentId: {
     primaryKey: true,
     autoIncrement: true,
@@ -18,10 +16,7 @@ export const Payment = sequelize.define("Paymen", {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  transactionId: {
+  getwayResponse: {
     type: DataTypes.CHAR(100),
   },
 });
-
-Payment.belongsTo(Buyer);
-Payment.belongsTo(Order);
