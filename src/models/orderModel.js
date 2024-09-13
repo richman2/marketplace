@@ -14,18 +14,15 @@ export const Order = sequelize.define("Order", {
   totalAmount: {
     type: DataTypes.STRING,
   },
-  orderStatus: {
+  status: {
     type: DataTypes.STRING,
-  },
-  paymenStatus: {
-    type: DataTypes.STRING,
-  },
-  paymenMethod: {
-    type: DataTypes.STRING,
-  },
+    values: ["Pending", "Processing", "Shipped", "Delivered", "Canceled", "returned"],
+  }, 
   shippingMethod: {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  
+  shippingCost: {
+    type: DataTypes.INTEGER,
+  },
 });

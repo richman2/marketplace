@@ -6,7 +6,7 @@ import bcrypt from "bcrypt";
 import jsonwebtoken from "jsonwebtoken";
 import validator from "validator";
 import crypto from "node:crypto";
-import mailSender from "../../utils/mailSender.js";
+import mailSender from "../../helper/mailSender.js";
 
 const signToken = (data) => {
   return jsonwebtoken.sign(data, process.env.JWT_SECRET, {
@@ -94,7 +94,7 @@ export const forgetPassword = catchAsync(async (req, res, next) => {
     await new mailSender(req.body.email, "Reset password", url).send();
     res.status(200).json({
       status: "sucess",
-      message: "We sent reset password link to your email. Chack your box mail",
+      message: "لینک تغییر رمز عبور  به ایمیل شما ارسال شد",
     });
   } catch (err) {
     user.passwordResetToken = null;

@@ -1,0 +1,126 @@
+[
+  {
+    "provinceName": "البرز",
+    "status": "available"
+  },
+  {
+    "provinceName": "اردبیل",
+    "status": "available"
+  },
+  {
+    "provinceName": "آذربایجان شرقی",
+    "status": "available"
+  },
+  {
+    "provinceName": "آذربایجان غربی",
+    "status": "available"
+  },
+  {
+    "provinceName": "بوشهر",
+    "status": "available"
+  },
+  {
+    "provinceName": "چهارمحال و بختیاری",
+    "status": "available"
+  },
+  {
+    "provinceName": "فارس",
+    "status": "available"
+  },
+  {
+    "provinceName": "گیلان",
+    "status": "available"
+  },
+  {
+    "provinceName": "گلستان",
+    "status": "available"
+  },
+  {
+    "provinceName": "همدان",
+    "status": "available"
+  },
+  {
+    "provinceName": "هرمزگان",
+    "status": "available"
+  },
+  {
+    "provinceName": "ایلام",
+    "status": "available"
+  },
+  {
+    "provinceName": "کرمان",
+    "status": "available"
+  },
+  {
+    "provinceName": "کرمانشاه",
+    "status": "available"
+  },
+  {
+    "provinceName": "خراسان شمالی",
+    "status": "available"
+  },
+  {
+    "provinceName": "خراسان رضوی",
+    "status": "available"
+  },
+  {
+    "provinceName": "خراسان جنوبی",
+    "status": "available"
+  },
+  {
+    "provinceName": "خوزستان",
+    "status": "available"
+  },
+  {
+    "provinceName": "کردستان",
+    "status": "available"
+  },
+  {
+    "provinceName": "لرستان",
+    "status": "available"
+  },
+  {
+    "provinceName": "مرکزی",
+    "status": "available"
+  },
+  {
+    "provinceName": "مازندران",
+    "status": "available"
+  },
+  {
+    "provinceName": "قزوین",
+    "status": "available"
+  },
+  {
+    "provinceName": "قم",
+    "status": "available"
+  },
+  {
+    "provinceName": "سمنان",
+    "status": "available"
+  },
+  {
+    "provinceName": "سیستان و بلوچستان",
+    "status": "available"
+  },
+  {
+    "provinceName": "تهران",
+    "status": "available"
+  },
+  {
+    "provinceName": "یزد",
+    "status": "available"
+  },
+  {
+    "provinceName": "زنجان",
+    "status": "available"
+  },
+  {
+    "provinceName": "اصفهان",
+    "status": "available"
+  },
+  {
+    "provinceName": "کهگیلویه و بویراحمد",
+    "status": "available"
+  }
+]

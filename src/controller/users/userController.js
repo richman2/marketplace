@@ -15,3 +15,7 @@ export const getMe = catchAsync(async (req, res, next) => {
   });
 });
 
+export const addAddress = catchAsync(async (req, res, next) => {
+
+});
+

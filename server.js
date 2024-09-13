@@ -6,14 +6,14 @@ dotenv.config({ path: "./config.env" });
 
 const PORT = process.env.PORT || 3000;
 sequelize
-  .sync({ force: true})
+  // .sync({ force: true })
   // .sync({ alter: true })
-  // .sync()
+  .sync()
   .then(async () => {
     await redisClient.flushall();
     console.log("connected");
     app.listen(3000, () => {
-      console.log("server is run");
+      console.log("server is running");
     });
   })
   .catch((err) => {

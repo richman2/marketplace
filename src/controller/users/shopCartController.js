@@ -5,6 +5,7 @@ import { Product } from "../../models/productModel.js";
 import ErrorApi from "../../utils/errorApi.js";
 import { sequelize } from "../../models/db.js";
 
+
 export const addToCart = catchAsync(async (req, res, next) => {
   const product = await Product.findByPk(req.body._productId);
 
@@ -20,7 +21,22 @@ export const addToCart = catchAsync(async (req, res, next) => {
 export const updateCart = catchAsync(async (req, res, next) => {
   if (!req.body.id) return next(new ErrorApi("لطفا آیدی محصول را ارسال کنید"));
   if (!req.body.side) return next(new ErrorApi("کاهش یا افزایش دادن محصول را مشخص کنید"));
+  console.log('works')
+
+  const cartItem = await CartItems.findOne({
+    where: { _cartItemId: req.body.id },
+    attributes: ["_productId", "quantity"],
+  });
+
+  const checkProductQuantity = await Product.findOne({
+    where: { _productId: cartItem.get("_productId") },
+    attributes: ["stockQuantity"],
+  });
+
   if (req.body.side === "up") {
+    if (cartItem.get("quantity") >= checkProductQuantity.get("stockQuantity"))
+      return res.status(422).json({ status: "faild", message: "موجودی محصول ناکافی" });
+    console.log('works')
     await CartItems.update(
       { price: sequelize.literal(`price * 2`), quantity: sequelize.literal("quantity + 1") },
       { where: { _cartItemId: req.body.id, _cartId: req.cart.get("_cartId") } }
@@ -32,6 +48,7 @@ export const updateCart = catchAsync(async (req, res, next) => {
     );
     await CartItems.destroy({ where: { quantity: 0 } });
   }
+  
   res.sendStatus(200);
 });
 
@@ -44,7 +61,7 @@ export const getCarts = catchAsync(async (req, res, next) => {
       {
         model: Product,
         through: { attributes: ["quantity", "price"] },
-        attributes: ["_productId", "productName", "price", "imagePath", "status"],
+        attributes: ["_productId", "productName", "price", "imagePath", "status", "stockQuantity"],
       },
     ],
   });

@@ -10,10 +10,15 @@ import { Order } from "./orderModel.js";
 import { Address } from "./addressModel.js";
 import { CartItems } from "./shoppingCartItem.js";
 import { Payment } from "./paymentModel.js";
+import { OrderItem } from "./orderItemModel.js";
+import { Discount } from "./discount.js";
+import { DiscountApplied } from "./discountApplied.js";
 
 export const association = null;
 ShoppingCart.belongsToMany(Product, { through: CartItems, foreignKey: "_cartId", onDelete: "CASCADE" });
 Product.belongsToMany(ShoppingCart, { through: CartItems, foreignKey: "_productId", onDelete: "CASCADE" });
+Order.belongsToMany(Product, { through: OrderItem, foreignKey: "_orderId" });
+Product.belongsToMany(Order, { through: OrderItem, foreignKey: "_productId" });
 ShoppingCart.belongsTo(User, { foreignKey: "_userId" });
 User.hasOne(ShoppingCart, { foreignKey: "_userId" });
 ShoppingCart.belongsTo(User, { foreignKey: "_userId" });
@@ -29,12 +34,14 @@ Category.hasMany(Category, { as: "children", foreignKey: "_parentId" });
 User.hasMany(Invoice, { foreignKey: "_userId" });
 Invoice.belongsTo(User, { foreignKey: "_userId" });
 Order.hasOne(Invoice, { foreignKey: "_orderId" });
-Order.belongsTo(User, {foreignKey: "_userId"})
-User.hasMany(Order, {foreignKey: "_userId"})
+Order.belongsTo(User, { foreignKey: "_userId" });
+User.hasMany(Order, { foreignKey: "_userId" });
 Invoice.belongsTo(Order, { foreignKey: "_orderId" });
 Product.belongsTo(Seller, { foreignKey: "_sellerId", onDelete: "CASCADE", onUpdate: "CASCADE" });
 Seller.hasMany(Product, { foreignKey: "_sellerId" });
 User.hasOne(Address, { foreignKey: "_userId" });
 Address.belongsTo(User, { foreignKey: "_userId" });
 Payment.belongsTo(Order);
-Order.hasOne(Payment)
+Order.hasOne(Payment);
+Discount.hasMany(DiscountApplied, { foreignKey: "_discountId" });
+DiscountApplied.belongsTo(Discount, { foreignKey: "_discountId" });

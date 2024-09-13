@@ -12,10 +12,31 @@ export const addManyToCat = addMany(Category, allowFields);
 export const findAllChildCategory = catchAsync(async (req, res, next) => {
   const cachedData = await RedisApi.findInRedis({ ModelName: Category.name });
   if (cachedData) return res.status(200).json({ data: cachedData });
+  // const categories = await Category.findAll({
+  //   where: { _parentId: null },
+  //   // include: ["children"],
+  //   include: { model: Category, as: "children" },
+  // });
   const categories = await Category.findAll({
-    where: { _parentId: null },
-    include: ["children"],
+    where: { _parentId: null }, // only top-level categories
+    include: {
+      model: Category,
+      as: "children",
+      include: {
+        model: Category,
+        as: "children",
+        include: {
+          model: Category,
+          as: "children",
+          include: {
+            model: Category,
+            as: "children",
+          },
+        },
+      },
+    },
   });
+  console.log("works");
   await RedisApi.setInRedis({ ModelName: Category.name, exTime: 7500, data: categories });
   res.status(200).json({ data: categories });
 });

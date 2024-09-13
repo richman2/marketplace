@@ -16,10 +16,10 @@ export const Category = sequelize.define(
       allowNull: false,
       unique: true,
     },
-    description: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
+    // description: {
+    //   type: DataTypes.TEXT,
+    //   allowNull: false,
+    // },
     _parentId: {
       type: DataTypes.INTEGER,
       allowNull: true,

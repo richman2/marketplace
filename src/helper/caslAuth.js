@@ -11,6 +11,10 @@ export class Authorization {
   async canDo() {
     return this.ability().can(this.action, this.document);
   }
+  isadmin() {
+    if (this.userData.user.role !== "admin") return false;
+    return this.ability().can(this.action, "all");
+  }
   ability() {
     return defineAbility((can, cannot) => {
       switch (this.userData.user.role) {

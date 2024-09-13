@@ -13,8 +13,7 @@ import { userRouter } from "./src/routes/userRoutes.js";
 import { sellerRouter } from "./src/routes/SellerRoutes.js";
 import { cartRouter } from "./src/routes/CartRoutes.js";
 import { association } from "./src/models/association.js";
-
-("express-mysql-session");
+import { adminRouter } from "./src/routes/adminRoutes.js";
 
 dotenv.config({ path: "./config.env" });
 export const app = express();
@@ -37,6 +36,7 @@ app.options(
     origin: ["*"], // Whitelist the domains you want to allow
   })
 );
+app.use(`/${process.env.ADMIN_ROUTE}/admin`, adminRouter);
 app.use("/api/v1/category", catRouter);
 app.use("/api/v1/product", prodRouter);
 app.use("/api/v1/auth", authRouter);

@@ -10,14 +10,14 @@ const sendErrorDev = (err, req, res) => {
 };
 
 const sendErrorProd = (err, req, res) => {
-  if (req.originalUrl.startsWith("/api")) {
+  // if (req.originalUrl.startsWith("/api")) {
     if (err.isOperational) {
       return res.status(err.statusCode).json({
         status: err.status,
         message: err.message,
       });
     }
-  }
+  // }
   console.log("Error occured", err);
   return res.status(500).json({
     status: "error",

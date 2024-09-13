@@ -7,7 +7,7 @@ import { Product } from "../models/productModel.js";
 import restrict from "../controller/guard/restrict.js";
 export const prodRouter = express.Router();
 
-prodRouter.post("/add/cat/:name", protect, deleteRedisCache(Product), addOneProd, setRedisCache(Product));
+prodRouter.post("/add/cat/", protect, deleteRedisCache(Product), addOneProd, setRedisCache(Product));
 prodRouter.get("/:name", findOneProd);
 prodRouter.get("/categories/:name", findRedisCache(Product), findProds);
 prodRouter.delete(
