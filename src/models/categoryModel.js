@@ -16,10 +16,10 @@ export const Category = sequelize.define(
       allowNull: false,
       unique: true,
     },
-    // description: {
-    //   type: DataTypes.TEXT,
-    //   allowNull: false,
-    // },
+    path: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     _parentId: {
       type: DataTypes.INTEGER,
       allowNull: true,
@@ -34,4 +34,3 @@ export const Category = sequelize.define(
     indexes: [{ unique: true, fields: ["categoryName"] }],
   }
 );
-

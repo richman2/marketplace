@@ -57,7 +57,6 @@ export const User = sequelize.define(
     password: {
       type: DataTypes.STRING,
       allowNull: false,
-      Selection: false,
     },
     passwordConfirm: {
       type: DataTypes.VIRTUAL,
@@ -77,7 +76,7 @@ export const User = sequelize.define(
     role: {
       type: DataTypes.STRING(10),
       Selection: false,
-      values: ["seller", "admin", "superAdmin", "user"],
+      values: ["seller", "admin", "user"],
       defaultValue: "user",
     },
     status: {

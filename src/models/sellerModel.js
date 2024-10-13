@@ -19,12 +19,6 @@ export const Seller = sequelize.define("Seller", {
   storeLogo: {
     type: DataTypes.STRING,
   },
-  paymentDetails: {
-    type: DataTypes.STRING,
-  },
-  rating: {
-    type: DataTypes.STRING,
-  },
   storePhone: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -50,4 +44,3 @@ export const Seller = sequelize.define("Seller", {
     },
   },
 });
-

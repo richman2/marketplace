@@ -1,5 +1,6 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "./db.js";
+import { Product } from "./productModel.js";
 
 export const Discount = sequelize.define("Discount", {
   _discountId: {
@@ -8,13 +9,23 @@ export const Discount = sequelize.define("Discount", {
     autoIncrement: true,
     allowNull: false,
   },
-  name: { type: DataTypes.STRING, allowNull: false },
+  discountName: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
+  },
   discountType: {
-    type: DataTypes.ENUM("precentage", "fixedAmount"),
+    type: DataTypes.ENUM("percentage", "fixed"),
     allowNull: false,
   },
+  usageLimit: {
+    type: DataTypes.INTEGER,
+  },
+  usageCount: {
+    type: DataTypes.INTEGER,
+  },
   value: {
-    type: DataTypes.DECIMAL(10, 2),
+    type: DataTypes.INTEGER,
     allowNull: false,
   },
   startDate: {
@@ -27,6 +38,8 @@ export const Discount = sequelize.define("Discount", {
   },
   isActive: {
     type: DataTypes.BOOLEAN,
-    defaultValue: true,
+    allowNull: false,
   },
 });
+
+export const ProductDiscount = sequelize.define("ProductDiscount", {});

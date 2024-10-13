@@ -2,7 +2,7 @@ import { DataTypes } from "sequelize";
 import { sequelize } from "./db.js";
 
 export const OrderItem = sequelize.define("OrderItem", {
-  _id: {
+  _orderItemId: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true,
@@ -13,6 +13,10 @@ export const OrderItem = sequelize.define("OrderItem", {
     allowNull: false,
   },
   quantity: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  discount: {
     type: DataTypes.INTEGER,
   },
 });

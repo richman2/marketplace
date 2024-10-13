@@ -14,6 +14,12 @@ import { sellerRouter } from "./src/routes/SellerRoutes.js";
 import { cartRouter } from "./src/routes/CartRoutes.js";
 import { association } from "./src/models/association.js";
 import { adminRouter } from "./src/routes/adminRoutes.js";
+import { payRouter } from "./src/routes/peymentRoutes.js";
+import { discountRouter } from "./src/routes/discountRoutes.js";
+import { locationRouter } from "./src/routes/locationRoutes.js";
+import { getAddress } from "./src/controller/users/addressController.js";
+import { reviewRouter } from "./src/routes/reviewRoutes.js";
+import { invoiceRouter } from "./src/routes/invoiceRoutes.js";
 
 dotenv.config({ path: "./config.env" });
 export const app = express();
@@ -36,13 +42,19 @@ app.options(
     origin: ["*"], // Whitelist the domains you want to allow
   })
 );
+//
 app.use(`/${process.env.ADMIN_ROUTE}/admin`, adminRouter);
+app.use("/api/v1/payment", payRouter);
 app.use("/api/v1/category", catRouter);
 app.use("/api/v1/product", prodRouter);
+app.use("/api/v1/discount", discountRouter);
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/seller", sellerRouter);
 app.use("/api/v1/cart", cartRouter);
+app.use("/api/v1/location", locationRouter);
+app.use("/api/v1/reviews", reviewRouter);
+app.use("/api/v1/invoice", invoiceRouter);
 app.all("*", (req, res, next) => {
   res.send("this route does not found");
 });

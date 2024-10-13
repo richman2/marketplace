@@ -10,25 +10,32 @@ export const Product = sequelize.define("Product", {
   },
   productName: {
     type: DataTypes.STRING,
+    validate: {
+      is: { args: /^[a-zA-Z ]+[^ ]$/i, msg: "don't use space before and after the productName" },
+    },
     allowNull: false,
   },
   description: {
-    type: DataTypes.TEXT,
+    type: DataTypes.JSON,
     allowNull: false,
   },
   price: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.DECIMAL,
     allowNull: false,
   },
   stockQuantity: {
-    type: DataTypes.STRING,
+    type: DataTypes.INTEGER,
     allowNull: false,
   },
   imagePath: {
     type: DataTypes.STRING,
+    // allowNull: false,
+    defaultValue: 'test'
   },
   status: {
     type: DataTypes.STRING,
   },
+  salesCount: {
+    type: DataTypes.INTEGER,
+  },
 });
-

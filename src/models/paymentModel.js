@@ -1,8 +1,8 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "./db.js";
 
-export const Payment = sequelize.define("Payment", {
-  _paymentId: {
+export const Transaction = sequelize.define("Transaction", {
+  _transactionId: {
     primaryKey: true,
     autoIncrement: true,
     allowNull: false,
@@ -16,7 +16,7 @@ export const Payment = sequelize.define("Payment", {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  getwayResponse: {
+  gatewayResponse: {
     type: DataTypes.CHAR(100),
   },
 });

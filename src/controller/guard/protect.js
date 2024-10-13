@@ -6,7 +6,6 @@ import { promisify } from "node:util";
 export const protect = catchAsync(async (req, res, next) => {
   // check if request contain jwt token
   const authHeaderCheck = req.headers?.authorization?.startsWith("Bearer");
-  console.log(authHeaderCheck);
   if (!authHeaderCheck) return next(new ErrorApi("Unauthorized", 401));
   const [, token] = req.headers.authorization.split(" ");
 
@@ -29,14 +28,24 @@ export const protect = catchAsync(async (req, res, next) => {
       return next(new ErrorApi("Password changed recently, login again"));
     }
   }
+  next();
+});
 
+export const checkCart = catchAsync(async (req, res, next) => {
   const isThereCart = await req.user?.getCart();
   req.cart = isThereCart;
   if (!isThereCart) {
     const createdCart = await req.user?.createCart();
     req.cart = createdCart;
   }
-  const sellerId = await req.user?.getSeller();
-  req.userData = { user: req.user, seller: sellerId, cart: req.cart };
+
+  next();
+});
+
+export const checkSeller = catchAsync(async (req, res, next) => {
+  const seller = await req.user?.getSeller();
+  if (!seller) return next(new ErrorApi("Forbidden", 404));
+  req.user.seller = seller;
+
   next();
 });

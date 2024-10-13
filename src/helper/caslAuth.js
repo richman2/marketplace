@@ -1,32 +1,38 @@
 import { defineAbility } from "@casl/ability";
 
 export class Authorization {
-  constructor(user = null, document = null, action, model = null) {
-    this.userData = user;
+  constructor(user = null, document, action, model) {
+    this.user = user;
     this.document = document;
     this.model = model;
     this.action = action;
+    console.log(this.action)
   }
 
-  async canDo() {
+  canDo() {
     return this.ability().can(this.action, this.document);
   }
   isadmin() {
-    if (this.userData.user.role !== "admin") return false;
+    if (this.user.get("role") !== "admin") return false;
     return this.ability().can(this.action, "all");
   }
+  isSeller() {
+    if (this.user.get("role") !== "seller") return false;
+    return true;
+  }
   ability() {
+
     return defineAbility((can, cannot) => {
-      switch (this.userData.user.role) {
+      switch (this.user.get("role")) {
         case "admin":
           can("manage", "all");
           break;
         case "user":
-          can("update", this.model, { _userId: this.userData.user._userId });
-          can("delete", this.model, { _userId: this.userData.user._userI });
-          can("read", this.model, { _userId: this.userData.user._userI });
+          can("update", this.model, { _userId: this.user.get("_userId") });
+          can("delete", this.model, { _userId: this.user.get("_userId") });
+          can("read", this.model, { _userId: this.user.get("_userId") });
         case "seller":
-          can("manage", this.model, { _sellerId: this.userData?.seller?.get("_sellerId") });
+          can(['delete', 'update'], this.model, { _sellerId: this.user?.seller.get("_sellerId") });
       }
     });
   }

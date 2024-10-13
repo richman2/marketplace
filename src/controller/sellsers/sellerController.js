@@ -2,11 +2,11 @@ import { Notif } from "../../models/notification.js";
 import { Seller } from "../../models/sellerModel.js";
 import { User } from "../../models/userModel.js";
 import catchAsync from "../../utils/catchAsync.js";
+import ErrorApi from "../../utils/errorApi.js";
 import filterField from "../../utils/filterFields.js";
-import RedisApi from "../../utils/RedisApi.js";
-import { findById } from "../factoryFunction.js";
+import { findById, updateOneRow } from "../factoryFunction.js";
 
-const allowFields = ["storeName", "storeDescription", "storeLogo", "paymentDetails", "storePhone"];
+const allowFields = ["storeName", "storeDescription", "storePhone"];
 export const createSeller = catchAsync(async (req, res, next) => {
   const allowedFields = filterField(allowFields, req.body);
 
@@ -18,13 +18,13 @@ export const createSeller = catchAsync(async (req, res, next) => {
     status: "success",
     message: "اطلاعات شما ذخیره شد و پس از تاییدیه از طرف مدیر به عنوان فروشنده میتوانید فعالیت کنید",
   });
-
-  await User.update({ role: "seller" }, { where: { _userId: seller.get("_userId") } });
-  await RedisApi.deleteByKey({ ModelName: User.name, uniqueId: req.user.get("_userId") });
-
-  res.status(200).json({
-    data: seller,
-  });
 });
 
 export const findOneSeller = findById(Seller);
+export const findMe = catchAsync(async (req, res, next) => {
+  const seller = await Seller.findOne({ where: { _userId: req.user.get("_userId") } });
+  if (!seller) return next(new ErrorApi("Not found", 404));
+  res.status(200).json({ data: seller });
+});
+
+export const updateSeller = updateOneRow(Seller, allowFields);
