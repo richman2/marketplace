@@ -96,6 +96,7 @@ export const createInvoice = async (orderId, userId) => {
 export const getInvoices = catchAsync(async (req, res, next) => {
   let invoice; // default undefined if no invoice found
   let invoices = []; // default an empty list if no invoices found
+
   let userType; // only seller or user can find them invoices (_userId or _sellerId)
   let id; // will be set to seller id or user id
   let _invoiceId; // if an invoiceId become from query input
@@ -104,6 +105,7 @@ export const getInvoices = catchAsync(async (req, res, next) => {
 
   if (userType === "_sellerId") {
     const seller = await req.user?.getSeller();
+    
     seller?.get("_sellerId") ? (id = seller?.get("_sellerId")) : (id = null);
   } else {
     id = req.user.get("_userId");
@@ -119,7 +121,6 @@ export const getInvoices = catchAsync(async (req, res, next) => {
     filter.where._invoiceId = _invoiceId;
     invoice = await Invoice.findOne(filter);
   } else {
-    console.log(filter);
     invoices = await Invoice.findAll(filter);
   }
   if (!invoice && !invoices.length) return next(new ErrorApi("پیدا نشد", 404));

@@ -1,8 +1,8 @@
-import { Category } from "../models/categoryModel.js";
-import catchAsync from "../utils/catchAsync.js";
-import ErrorApi from "../utils/errorApi.js";
-import { addMany, addOne, deleteOneRowByKey, updateOneRow } from "../controller/factoryFunction.js";
-import Query from "../utils/queryApi.js";
+import { Category } from "../../models/categoryModel.js";
+import catchAsync from "../../utils/catchAsync.js";
+import ErrorApi from "../../utils/errorApi.js";
+import { addMany, addOne, deleteOneRowByKey, updateOneRow } from "../factoryFunction.js";
+import Query from "../../utils/queryApi.js";
 
 const allowFields = ["categoryName", "description", "_parentId"];
 export const addOneToCat = addOne(Category, allowFields);

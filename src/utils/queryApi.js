@@ -4,6 +4,7 @@ export default class Query {
   }
   sort(sortBy, order) {
     if (sortBy) {
+      this.option.order = [];
       this.option.order.push([sortBy, order || "ASC"]);
     }
     return this;
@@ -14,11 +15,11 @@ export default class Query {
     }
     return this;
   }
-  pagination(limit, offset, page) {
-    if ((limit, offset)) {
+  pagination(limit, page) {
+    if (limit) {
       page = page || 1;
-      this.option.limit = this.limit || 100;
-      this.option.offset = (this.page - 1) * this.limit;
+      this.option.limit = limit || 100;
+      this.option.offset = (page - 1) * limit;
     }
     return this;
   }

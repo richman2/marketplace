@@ -14,13 +14,16 @@ const signToken = (data) => {
   });
 };
 
-const createSendToken = (user, statusCode, res) => {
-  const token = signToken({ data: { id: user.get("_userId"), username: user.get("username") } });
-
+const createSendToken = (user, statusCode, res, action) => {
+  let token;
+  if (action !== "signup") {
+    token = signToken({ data: { id: user.get("_userId"), username: user.get("username") } });
+  }
   user.password = undefined;
   user.passwordResetToken = undefined;
   user.passwordResetExpire = undefined;
   user.passwordChangedAt = undefined;
+  user.passwordConfirm = undefined;
   user.role = undefined;
   user.logedout = undefined;
 
@@ -36,7 +39,7 @@ export const signUp = catchAsync(async (req, res, next) => {
 
   const user = await User.create({ firstName, lastName, username, email, password, passwordConfirm });
 
-  createSendToken(user, 201, res);
+  createSendToken(user, 201, res, "signup");
 });
 
 export const login = catchAsync(async (req, res, next) => {
@@ -45,7 +48,7 @@ export const login = catchAsync(async (req, res, next) => {
   // check if email or username and password have value
   const usernameOrEmail = email ?? username;
   if (!usernameOrEmail || !password)
-    return next(new ErrorApi("لطفا ایمیل یا نام کاربری و پسورد خودت را وارد کنید", 422));
+    return next(new ErrorApi("لطفا ایمیل یا نام کاربری و پسورد خودت را وارد کنید", 400));
 
   if (email && !validator.isEmail(email)) {
     return next(new ErrorApi("یک ایمیل معتبر وارد کنید", 422));
@@ -58,7 +61,7 @@ export const login = catchAsync(async (req, res, next) => {
   if (!user) return next(new ErrorApi("چنین مشخصاتی در سیستم وجود ندارد. لطفا ثبت نام کنید و بعد وارد شوید"), 400);
 
   // check if password is correct
-  const compare = await bcrypt.compare(password, user.get("password"));
+  const compare = password === user.get("password"); //bcrypt.compare(password, user.get("password"));
   if (!compare) return next(new ErrorApi("رمز عبور اشتباه میباشد", 401));
   user.dataValues.password = undefined;
 
@@ -66,18 +69,19 @@ export const login = catchAsync(async (req, res, next) => {
 });
 
 export const updatePassword = catchAsync(async (req, res, next) => {
-  const { passwordCurrent, passwordConfirm, password } = req.body;
+  const { currentPassword, newPasswordConfirm, newPassword } = req.body;
 
-  if (!passwordConfirm || !passwordCurrent || !password) return next(new ErrorApi("پر کردن فیلد ها الزامی هست"));
-  
+  if (!newPasswordConfirm || !currentPassword || !newPassword)
+    return next(new ErrorApi("پر کردن فیلد ها الزامی هست", 400));
+
   const user = await User.findByPk(req.user.get("_userId"), { attributes: { include: ["password"] } });
-  
+
   // copare passwords
-  const compare = await bcrypt.compare(req.body.passwordCurrent, user.get("password"));
+  const compare = bcrypt.compare(req.body.currentPassword, user.get("password"));
   if (!compare) return next(new ErrorApi("Your current password is wrong", 401));
 
-  user.password = password;
-  user.passwordConfirm = passwordConfirm;
+  user.password = newPassword;
+  user.passwordConfirm = newPasswordConfirm;
 
   user.passwordChangedAt = Date.now() - 1000;
   await user.save();
@@ -92,7 +96,7 @@ export const forgetPassword = catchAsync(async (req, res, next) => {
   }
 
   const resetToken = crypto.randomBytes(32).toString("hex");
-  
+
   user.passwordResetToken = crypto.createHash("sha256").update(resetToken).digest("hex");
   user.passwordResetExpire = Date.now() + 600000; // 1h expire date
 
@@ -109,21 +113,21 @@ export const forgetPassword = catchAsync(async (req, res, next) => {
     user.passwordResetToken = null;
     user.passwordResetExpire = null;
     await user.save();
-   
+
     return next(new ErrorApi("مشکلی در ارسال ایمیل به وجود آمده لطفا مجدد تلاش کنید", 500));
   }
 });
 
 export const resetPasswordToken = catchAsync(async (req, res, next) => {
   const hashedToken = crypto.createHash("sha256").update(req.params.token).digest("hex");
-  
+
   const user = await User.findOne({
     where: { passwordResetToken: hashedToken, passwordResetExpire: { [Op.gt]: Date.now() } },
   });
-  if (!user) return next(new ErrorApi("توکن معتبر نمیباشد"));
+  if (!user) return next(new ErrorApi("توکن معتبر نمیباشد", 422));
 
   const { passwordConfirm, password } = req.body;
-  if (!passwordConfirm || !password) return next(new ErrorApi("پر کردن فیلد ها الزامی هست"));
+  if (!passwordConfirm || !password) return next(new ErrorApi("پر کردن فیلد ها الزامی هست"), 400);
 
   user.password = password;
   user.passwordConfirm = passwordConfirm;

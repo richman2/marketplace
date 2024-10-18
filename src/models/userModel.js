@@ -70,7 +70,7 @@ export const User = sequelize.define(
       },
       Selection: false,
     },
-    phone_number: {
+    phoneNumber: {
       type: DataTypes.STRING,
     },
     role: {
@@ -92,6 +92,7 @@ export const User = sequelize.define(
       type: DataTypes.DATE,
     },
     logedout: { type: DataTypes.DATE },
+    imagePath: { type: DataTypes.STRING },
   },
   {
     indexes: [{ unique: true, fields: ["_userId"] }],

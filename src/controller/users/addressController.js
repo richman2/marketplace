@@ -12,8 +12,7 @@ export const address = catchAsync(async (req, res, next) => {
 
 export const getAddress = catchAsync(async (req, res, next) => {
   const address = await req.user.getAddresses();
-  if (!address.length) return next(new ErrorApi("یک آدرس وارد کنید", 422));
+  if (!address.length) return next(new ErrorApi("Nothing found", 404));
   req.address = address;
   return res.status(200).json(address);
-  next();
 });

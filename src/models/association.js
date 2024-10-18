@@ -20,8 +20,8 @@ export const association = null;
 ShoppingCart.belongsToMany(Product, { through: CartItems, foreignKey: "_cartId", onDelete: "CASCADE" });
 Product.belongsToMany(ShoppingCart, { through: CartItems, foreignKey: "_productId", onDelete: "CASCADE" });
 
-Order.belongsToMany(Product, { through: OrderItem, foreignKey: "_orderId" });
-Product.belongsToMany(Order, { through: OrderItem, foreignKey: "_productId" });
+Order.belongsToMany(Product, { through: OrderItem, foreignKey: "_orderId", onDelete: 'CASCADE' });
+Product.belongsToMany(Order, { through: OrderItem, foreignKey: "_productId", onDelete: 'CASCADE' });
 
 ShoppingCart.belongsTo(User, { foreignKey: "_userId" });
 User.hasOne(ShoppingCart, { foreignKey: "_userId" });
@@ -49,7 +49,7 @@ User.hasMany(Order, { foreignKey: "_userId" });
 Order.hasOne(Invoice, { foreignKey: "_orderId" });
 Invoice.belongsTo(Order, { foreignKey: "_orderId" });
 
-Product.belongsTo(Seller, { foreignKey: "_sellerId", onDelete: "CASCADE", onUpdate: "CASCADE" });
+Product.belongsTo(Seller, { foreignKey: "_sellerId", onDelete: "CASCADE", onUpdate: "SET NULL" });
 Seller.hasMany(Product, { foreignKey: "_sellerId" });
 
 User.hasMany(Address, { foreignKey: "_userId" });
@@ -61,13 +61,13 @@ Order.hasOne(Transaction, { foreignKey: "_orderId" });
 Discount.hasMany(ProductDiscount, { foreignKey: "_discountId" });
 ProductDiscount.belongsTo(Discount, { foreignKey: "_discountId" });
 
-Product.hasOne(ProductDiscount, { foreignKey: "_productId" });
+Product.hasOne(ProductDiscount, { foreignKey: "_productId", onDelete: 'CASCADE'});
 ProductDiscount.belongsTo(Product, { foreignKey: "_productId" });
 
 Seller.hasMany(Discount, { foreignKey: "_sellerId" });
 Discount.belongsTo(Seller, { foreignKey: "_sellerId" });
 
-Product.hasMany(Review, { foreignKey: "_productId" });
+Product.hasMany(Review, { foreignKey: "_productId", onDelete: 'CASCADE' });
 Review.belongsTo(Product, { foreignKey: "_productId" });
 
 User.hasMany(Review, { foreignKey: "_userId" });
@@ -76,7 +76,7 @@ Review.belongsTo(User, { foreignKey: "_userId" });
 Review.hasOne(SellerResponse, { foreignKey: "_reviewId" });
 SellerResponse.belongsTo(Review, { foreignKey: "_reviewId" });
 
-Product.hasOne(Rating, { foreignKey: "_productId" });
+Product.hasOne(Rating, { foreignKey: "_productId", onDelete: 'CASCADE' });
 Rating.belongsTo(Product, { foreignKey: "_productId" });
 
 Seller.hasMany(OrderNotif, { foreignKey: "_sellerId" });

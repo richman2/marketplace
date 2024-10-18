@@ -22,7 +22,7 @@ export const order = catchAsync(async (req, res, next) => {
 
   const invoices = await createInvoice(2, 1);
   res.status(200).json(invoices);
-  /*
+  
   const cart = await ShoppingCart.findOne({
     where: { _cartId },
     include: [
@@ -87,5 +87,5 @@ export const getMyorders = catchAsync(async (req, res, next) => {
 
 export const findAllOrders = catchAsync(async (req, res, next) => {
   const orders = await Order.findAll();
-  res.status(200).json(orders);*/
+  res.status(200).json(orders);
 });

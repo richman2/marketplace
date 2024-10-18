@@ -5,21 +5,20 @@ import { ProductDiscount } from "../../models/discount.js";
 import catchAsync from "../../utils/catchAsync.js";
 import ErrorApi from "../../utils/errorApi.js";
 import filterField from "../../utils/filterFields.js";
+import { updateOneRow } from "../factoryFunction.js";
 
 export const addDiscount = catchAsync(async (req, res, next) => {
   // check discount limit service, anyone can only create 5 discount service
   const limitUSage = await req.user.seller.getDiscounts();
 
-  if (limitUSage.length >= 5) return next(new ErrorApi("بیشتر از 5 بار نمیتوانید از سرویس تخفیف استفاده کنید", 403));
+  if (limitUSage.length > 5) return next(new ErrorApi("بیشتر از 5 بار نمیتوانید از سرویس تخفیف استفاده کنید", 403));
 
-  const { discountName, discountType, usageLimit, value, startDate, endDate, isActive } = req.body;
+  const { discountName, discountType, value, endDate, isActive } = req.body;
 
   await req.user.seller.createDiscount({
     discountName,
     discountType,
-    usageLimit,
     value,
-    startDate,
     endDate,
     isActive,
   });
@@ -42,7 +41,7 @@ export const applyProductDiscount = catchAsync(async (req, res, next) => {
       startDate: { [Op.lte]: sequelize.literal("NOW()") },
     },
   });
-  if (!discount) return next(new ErrorApi("تخفیف اعمال نشد", 422));
+  if (!discount) return next(new ErrorApi("سرویس تخفیف وجود ندارد", 404));
 
   // if query parameter is equal to true, apply discount on all products of the seller
   if (req.query.bulk === "true") {
@@ -78,11 +77,7 @@ export const deleteDiscount = catchAsync(async (req, res, next) => {
   res.status(204).json();
 });
 
-export const updateDiscount = catchAsync(async (req, res, next) => {
-  const allowedFields = filterField(["discountName", "isActive", "endDate", "discountType", "value"], req.body);
-
-  await Discount.update(allowedFields, { where: { _discountId: req.body._discountId } });
-});
+export const updateDiscount = updateOneRow(Discount, ["discountName", "isActive", "endDate", "discountType", "value"]);
 
 export const getMyDiscount = catchAsync(async (req, res, next) => {
   const discount = await Discount.findAll({ where: { _sellerId: req.user.seller.get("_sellerId") } });

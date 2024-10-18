@@ -11,8 +11,10 @@ export const protect = catchAsync(async (req, res, next) => {
 
   const verify = await promisify(jsonwebtoken.verify)(token, "secretKey");
   if (verify.exp < Date.now() / 1000) return next(new ErrorApi("Token expired"), 401);
-
+  
   req.user = await User.findByPk(verify.data.id, { attributes: { includes: ["role"] } });
+  if (!req.user) return next(new ErrorApi("Unauthorize", 401));
+
   const checkLogout = req.user?.get("logedout");
   if (checkLogout) {
     const logoutTimeStamp = parseInt(Date.parse(checkLogout) / 1000 + 10, 10);

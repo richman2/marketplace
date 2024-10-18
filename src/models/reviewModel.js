@@ -8,14 +8,6 @@ export const Review = sequelize.define("Review", {
     autoIncrement: true,
     allowNull: false,
   },
-  rating: {
-    type: DataTypes.DECIMAL(2, 1),
-    validate: {
-      min: 1,
-      max: 5,
-    },
-    allowNull: false,
-  },
   comment: {
     type: DataTypes.TEXT,
     allowNull: false,

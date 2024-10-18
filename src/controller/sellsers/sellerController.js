@@ -6,7 +6,7 @@ import ErrorApi from "../../utils/errorApi.js";
 import filterField from "../../utils/filterFields.js";
 import { findById, updateOneRow } from "../factoryFunction.js";
 
-const allowFields = ["storeName", "storeDescription", "storePhone"];
+const allowFields = ["storeName", "storeDescription", "storePhone", "website"];
 export const createSeller = catchAsync(async (req, res, next) => {
   const allowedFields = filterField(allowFields, req.body);
 
@@ -27,4 +27,8 @@ export const findMe = catchAsync(async (req, res, next) => {
   res.status(200).json({ data: seller });
 });
 
-export const updateSeller = updateOneRow(Seller, allowFields);
+export const updateSeller = catchAsync(async (req, res, next) => {
+  const allowedFields = filterField(allowFields, req.body);
+  await Seller.update(allowedFields, { where: { _sellerId: req.user.seller.get("_sellerId") } });
+  res.sendStatus(200);
+});

@@ -6,8 +6,10 @@ export default function (Model, action, role) {
   return catchAsync(async (req, _, next) => {
     if (Model) {
       const doc = await Model.findByPk(req.params.id);
+      if (!doc) return next(new ErrorApi("not found", 404));
       const canDo = new Authorization(req.user, doc, action, Model).canDo();
       if (!canDo) return next(new ErrorApi("Forbiden", 403));
+      return next();
     }
     switch (role) {
       case "admin":

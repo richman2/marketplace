@@ -4,6 +4,7 @@ import { sequelize } from "../../models/db.js";
 
 export const rating = async (productId, rating) => {
   const rate = await Rating.findOne({ where: { _productId: productId } });
+  console.log(rate)
   if (!rate) {
     await Rating.create({
       _productId: productId,

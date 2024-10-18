@@ -6,7 +6,7 @@ import {
   deleteOneCat,
   findAllChildCategory,
   findOneCat,
-} from "../categories/categoryController.js";
+} from "../controller/categories/categoryController.js";
 import restrict from "../controller/guard/restrict.js";
 import { updateCart } from "../controller/users/shopCartController.js";
 import { protect } from "../controller/guard/protect.js";

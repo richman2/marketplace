@@ -29,13 +29,13 @@ export const Product = sequelize.define("Product", {
   },
   imagePath: {
     type: DataTypes.STRING,
-    // allowNull: false,
-    defaultValue: 'test'
+    allowNull: false,
   },
   status: {
     type: DataTypes.STRING,
   },
   salesCount: {
     type: DataTypes.INTEGER,
+    defaultValue: 0
   },
 });

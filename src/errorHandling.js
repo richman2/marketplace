@@ -11,12 +11,12 @@ const sendErrorDev = (err, req, res) => {
 
 const sendErrorProd = (err, req, res) => {
   // if (req.originalUrl.startsWith("/api")) {
-    if (err.isOperational) {
-      return res.status(err.statusCode).json({
-        status: err.status,
-        message: err.message,
-      });
-    }
+  if (err.isOperational) {
+    return res.status(err.statusCode).json({
+      status: err.status,
+      message: err.message,
+    });
+  }
   // }
   console.log("Error occured", err);
   return res.status(500).json({
@@ -25,12 +25,11 @@ const sendErrorProd = (err, req, res) => {
   });
 };
 const duplicationErrorHandle = (err, res) => {
-  const error = new ErrorApi(`${Object.values(err.fields)} قبلا استفاده شده است`, 400);
+  const error = new ErrorApi(`${Object.values(err.fields)} قبلا استفاده شده است`, 409);
   return error;
 };
 
 const validationErrorHandle = (err, res) => {
-  console.log(err);
   let error = new ErrorApi(`${err.errors[0]["message"]}`, 400);
   if (err.errors[0]["type"].includes("notNull")) error = new ErrorApi("لطفا تمامی فیلد ها را پر کنید", 400);
   return error;
@@ -38,7 +37,6 @@ const validationErrorHandle = (err, res) => {
 export default function handleError(err, req, res, next) {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
-
   if (process.env.NODE_ENV === "development") {
     sendErrorDev(err, req, res);
   } else if (process.env.NODE_ENV === "production") {

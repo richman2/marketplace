@@ -16,3 +16,16 @@ export const deleteRedisCache = (Model) => {
     next();
   });
 };
+
+// export const setRedisCache = (Model) => {
+//   return catchAsync(async (req, res, next) => {
+//     switch (Model.name) {
+//       case "Cart":
+//         await redisClient.del(`${Model.name}${req.user.get("_userId")}`);
+//         break;
+//       case "Product":
+//         await redisClient.set()
+//         break;
+//     }
+//   });
+// };

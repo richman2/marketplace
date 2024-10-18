@@ -32,5 +32,15 @@ export const Category = sequelize.define(
   {
     paranoid: true,
     indexes: [{ unique: true, fields: ["categoryName"] }],
+    hooks: {
+      beforeBulkCreate: async (records) => {
+        const category = await Category.findByPk(records[0].get("_parentId"));
+        records.forEach((el) => {
+          el.dataValues.path = el.get("_parentId")
+            ? `${category.get("path")}/${el.get("_parentId")}`
+            : `/${el.dataValues.categoryName}`;
+        });
+      },
+    },
   }
 );

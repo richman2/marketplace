@@ -6,7 +6,6 @@ export class Authorization {
     this.document = document;
     this.model = model;
     this.action = action;
-    console.log(this.action)
   }
 
   canDo() {
