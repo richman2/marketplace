@@ -23,6 +23,9 @@ export const addOneProd = catchAsync(async (req, res, next) => {
   // const redisKey = `${Product.name}:${category.get("path").split("/")[1]}`;
 
   const allowedFields = filterField(allowFields, req.body);
+  if (req.file) {
+    req.body.imagePath = `/images/product/${req.file.filename}`;
+  }
   allowedFields._sellerId = req.user.seller.get("_sellerId");
 
   await category.createProduct(allowedFields);
