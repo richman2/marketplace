@@ -8,7 +8,6 @@ export const consumeNotifications = (Model) =>
     }
 
     const query = { where: { status: req.query.status ?? "unread" } };
-    console.log(req.path);
     if (req.path.includes("seller")) query.where._sellerId = req.user.seller.get("_sellerId");
     const notifs = await Model.findAll({ where: { status: req.query.status ?? "unread" } });
     if (!notifs.length) {

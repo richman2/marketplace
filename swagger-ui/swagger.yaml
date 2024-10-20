@@ -84,6 +84,9 @@ tags:
   - name: Invoice
     description: manage invoices
   - name: Admins
+    description: manage marketplace
+  - name: Notifications
+    description: Get notifications
 components:
   securitySchemes:
     BearerAuth:         # Define a security scheme for Bearer JWT
@@ -2218,3 +2221,66 @@ paths:
           description: Forbidden User is not an admin
         '404':
           description: User not found
+
+  /notif/seller:
+    get:
+      tags:
+        - Notifications
+      summary: Get seller notifications
+      security:
+        - bearerAuth: []  # Assuming you're using JWT authentication for sellers
+      responses:
+        '200':
+          description: Notifications retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _sellerId:
+                      type: integer
+                    _orderId:
+                      type: integer
+                    _notifId:
+                      type: integer
+                    message:
+                      type: string
+                    status:
+                      type: string
+        '401':
+          description: Unauthorized JWT token is invalid or missing
+        '403':
+          description: Forbidden only seller can do this action
+        '404':
+          description: Not found
+  /notif/admin:
+    get:
+      tags:
+        - Notifications
+      summary: Get admin notifications
+      security:
+        - bearerAuth: []  # Assuming you're using JWT authentication for sellers
+      responses:
+        '200':
+          description: Notifications retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _notifId:
+                      type: integer
+                    message:
+                      type: string
+                    status:
+                      type: string
+        '401':
+          description: Unauthorized JWT token is invalid or missing
+        '403':
+          description: Forbidden only admin can do this action
+        '404':
+          description: Not found
