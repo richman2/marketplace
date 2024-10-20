@@ -19,6 +19,11 @@ sequelize
   .catch((err) => {
     console.log(err);
   });
-app.listen(PORT, "0.0.0.0", () => {
+const server = app.listen(PORT, "0.0.0.0", () => {
   console.log(`server is listening on port ${PORT}`);
+});
+
+process.on("SIGINT", () => {
+  server.close();
+  process.exit(0);
 });

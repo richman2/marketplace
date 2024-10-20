@@ -37,6 +37,7 @@ export const findProds = catchAsync(async (req, res, next) => {
 
   if (!category) return next(new ErrorApi("چنین دسته بندی وجود ندارد", 404));
 
+  console.log(category);
   const redisKey = `${Product.name}:${category.get("path").split("/")[1]}`;
 
   // let shouldBeSet;
@@ -51,7 +52,7 @@ export const findProds = catchAsync(async (req, res, next) => {
     where: { path: { [Op.like]: `${category.get("path")}%` } },
   });
   const catIds = cat.map((el) => el.get("_categoryId"));
-
+  console.log(catIds);
   let query = new Query();
   query = query.filter({ _categoryId: { [Op.in]: catIds } }).includeOption(2, [2, 1], widelyUsedIncludeOption());
 

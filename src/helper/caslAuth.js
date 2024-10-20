@@ -20,7 +20,6 @@ export class Authorization {
     return true;
   }
   ability() {
-
     return defineAbility((can, cannot) => {
       switch (this.user.get("role")) {
         case "admin":
@@ -31,7 +30,7 @@ export class Authorization {
           can("delete", this.model, { _userId: this.user.get("_userId") });
           can("read", this.model, { _userId: this.user.get("_userId") });
         case "seller":
-          can(['delete', 'update'], this.model, { _sellerId: this.user?.seller.get("_sellerId") });
+          can(["delete", "update"], this.model, { _sellerId: this.user?.seller.get("_sellerId") });
       }
     });
   }

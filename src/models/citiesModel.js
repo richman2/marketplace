@@ -7,11 +7,13 @@ export const City = sequelize.define("City", {
     primaryKey: true,
     autoIncrement: true,
   },
+  cityName: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
   status: {
     type: DataTypes.STRING,
     defaultValue: "available",
     values: ["available", "unavailable"],
   },
 });
-
-

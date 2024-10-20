@@ -15,6 +15,7 @@ export const addOne = function (Model, allowFields) {
 
 export const addMany = function (Model, allowFields) {
   return catchAsync(async (req, res, next) => {
+    
     const allowedFields = filterField(allowFields, req.body);
 
     const data = await sequelize.transaction(async (t) => {
@@ -41,9 +42,8 @@ export const findByName = function (Model, name, excludeAttr, includeAttr) {
   });
 };
 
-export const findAll = function (Model, ModelName) {
+export const findAll = function (Model) {
   return catchAsync(async (req, res, next) => {
-    if (cached) return res.status(200).json({ data: cached });
     const model = await Model.findAll();
     if (!model.length) return next(new ErrorApi("پیدا نشد", 404));
     res.status(200).json({
@@ -68,7 +68,7 @@ export const deleteOneRowByKey = function (Model, columnName) {
 export const updateOneRow = function (Model, allowFields) {
   return catchAsync(async (req, res, next) => {
     const isExist = await Model.findByPk(req.params.id);
-    
+
     if (!isExist) return next(new ErrorApi("پیدا نشد", 404));
     const id = Object.keys(isExist.dataValues)[0];
 

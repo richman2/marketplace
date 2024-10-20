@@ -7,6 +7,9 @@ export const consumeNotifications = (Model) =>
       return next(new ErrorApi("Error use query parameter status (read, unread)"));
     }
 
+    const query = { where: { status: req.query.status ?? "unread" } };
+    console.log(req.path);
+    if (req.path.includes("seller")) query.where._sellerId = req.user.seller.get("_sellerId");
     const notifs = await Model.findAll({ where: { status: req.query.status ?? "unread" } });
     if (!notifs.length) {
       return next(new ErrorApi("there are no notifications", 404));

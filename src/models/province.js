@@ -7,9 +7,9 @@ export const Province = sequelize.define("Province", {
     primaryKey: true,
     autoIncrement: true,
   },
-  provName:{
+  provinceName: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: false,
   },
   status: {
     type: DataTypes.STRING,
@@ -17,4 +17,3 @@ export const Province = sequelize.define("Province", {
     values: ["available", "unavailable"],
   },
 });
-

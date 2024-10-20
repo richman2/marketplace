@@ -14,8 +14,8 @@ import { ShoppingCart } from "../models/shoppingCart.js";
 import { Product } from "../models/productModel.js";
 import restrict from "../controller/guard/restrict.js";
 import { rating } from "../controller/product/ratingController.js";
-import { resizeUserPhoto } from "../controller/fileUploader/resizer.js";
-import { photoUploader } from "../controller/fileUploader/multer.js";
+// import { resizeUserPhoto } from "../controller/fileUploader/resizer.js";
+import { imageUploader } from "../controller/fileUploader/multer.js";
 export const prodRouter = express.Router();
 
 prodRouter.get("/search", search);
@@ -24,9 +24,8 @@ prodRouter.get("/categories/:name", findProds);
 
 prodRouter.use(protect, checkSeller);
 
-
 prodRouter.get("/myProducts", findMyProduct);
 prodRouter.use(deleteRedisCache(Product));
-prodRouter.post("/add/", photoUploader, resizeUserPhoto("products"), addOneProd);
+prodRouter.post("/add/", imageUploader, addOneProd);
 prodRouter.delete("/del/:id", restrict(Product, "delete"), deleteOneProd);
-prodRouter.patch("/update/:id", restrict(Product, "update"), photoUploader, resizeUserPhoto("products"), updateOnePro);
+prodRouter.patch("/update/:id", restrict(Product, "update"), imageUploader, updateOnePro);

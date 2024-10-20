@@ -7,3 +7,4 @@ import { createSeller } from "../controller/sellsers/sellerController.js";
 import { addOneProd, deleteOneProd } from "../controller/product/prodController.js";
 import { Category } from "../models/categoryModel.js";
 export const adminRouter = express.Router();
+

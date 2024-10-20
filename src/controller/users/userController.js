@@ -29,7 +29,10 @@ export const getMe = catchAsync(async (req, res, next) => {
 });
 
 export const updateMe = catchAsync(async (req, res, next) => {
+  if (req.file) {
+    req.body.imagePath = `/images/users/${req.file.filename}`;
+  }
   const allowedFields = filterField(allowFields, req.body);
-  await User.update(allowedFields, { where: { _userId: req.user.get("_userId") } });
+  // await User.update(allowedFields, { where: { _userId: req.user.get("_userId") } });
   res.sendStatus(201);
 });

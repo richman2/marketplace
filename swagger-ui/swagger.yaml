@@ -1,0 +1,2220 @@
+openapi: 3.0.0
+info:
+  title: Marketplace API
+  version: 1.0.0
+  description: >
+    The **Marketplace API** provides a platform for buyers and sellers to
+    interact and conduct transactions. This API allows third-party developers to
+    access core marketplace functionalities such as product listing, user
+    authentication, shopping cart management, and order processing.
+
+
+    ### Key Features:
+
+
+    - **Product Management**: Create, update, and delete product listings.
+
+    - **User Authentication**: Secure user registration, login, and role-based
+    access control.
+
+    - **Cart & Orders**: Manage shopping cart operations and process orders.
+
+    - **Notifications**: Send notifications to sellers, buyers, and admins based
+    on marketplace events.
+
+    - **Reviews & Ratings**: Provide product reviews and rate sellers.
+
+    - **Payment Handling**: Integrate with third-party payment gateways for
+    transactions.
+
+
+    ### Use Cases:
+
+
+    - **For Buyers**: 
+      - Browse and search products.
+      - Add products to cart, manage cart, and place orders.
+      - Track order statuses.
+    - **For Sellers**:
+      - Manage product listings and inventories.
+      - View and process customer orders.
+    - **For Admins**:
+      - Oversee platform transactions, user management, and enforce policies.
+
+    ### Authentication:
+
+
+    This API uses **JWT Bearer tokens** for authentication. Users must obtain a
+    token via the `/auth/login` endpoint and include it in the `Authorization`
+    header for protected routes.
+  contact:
+    name: Marketplace API Support
+    email: support@marketplace.com
+    url: https://www.marketplace.com
+servers:
+  - url: http://192.168.1.5:3000/
+    description: Production Server
+  - url: http://192.168.1.5:3000/
+    description: Staging Server
+  - url: http://192.168.1.5:3000/
+    description: development server
+tags:
+  - name: Authentication
+    description: Endpoints for user authentication, registration, and token management.
+  - name: Seller
+    description: Enpoint for manage seller
+  - name: Orders
+    description: Endpoints for managing shopping carts, orders, and payments.
+  - name: Notifications
+    description: Endpoints for sending and receiving notifications for marketplace events.
+  - name: Reviews
+    description: Endpoints for leaving product reviews and ratings.
+  - name: Users
+    description: Endpoints for user profiles, roles, and account management.
+  - name: Products
+    description: Enpoint for manage Products
+  - name: Categories
+    description: manage categories
+  - name: Discounts
+    description: Managing product discounts (discount Service)
+  - name: ShopCart
+    description: User shopping cart
+  - name: Paymenting
+    description: take a payment
+  - name: Invoice
+    description: manage invoices
+  - name: Admins
+components:
+  securitySchemes:
+    BearerAuth:         # Define a security scheme for Bearer JWT
+      type: apiKey
+      description: format: bearer {token}
+      scheme: bearer
+      name: Authorization
+      in: header
+
+components:
+  schemas:
+    Category:
+      type: object
+      properties:
+        _categoryId:
+          type: integer
+          description: ID of the category
+        categoryName:
+          type: string
+          description: Name of the category
+        _parentId:
+          type: integer
+          description: ID of the parent category (null if it's a main category)
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp of category creation
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp of the last update
+        deletedAt:
+          type: string
+          format: date-time
+          description: Timestamp of deletion (null if not deleted)
+    CategoryWithChildren:
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/Category"
+        - type: object
+          properties:
+            children:
+              type: array
+              items:
+                $ref: "#/components/schemas/CategoryWithChildren"
+
+     # Apply BearerAuth globally to all routes by default
+paths:
+  /auth/signup:
+    post:
+      tags:
+        - Authentication
+      summary: User signup
+      description: >
+        ### Authenticate a user and retrieve a JWT token that can be used for
+        accessing protected endpoints.
+      requestBody:
+        description: Signup credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                username:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                passwordConfirm:
+                  type: string
+              required:
+                - email
+                - password
+                - firstName
+                - username
+                - lastName
+                - passwordConfirm
+              example:
+                firstName: reza
+                lastName: zare
+                email: reza@gmail.com
+                username: reza
+                password: "1234"
+                passwordConfirm: "1234"
+      responses:
+        "201":
+          description: Successful Signup
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      firstName:
+                        type: string
+                      lastName:
+                        type: string
+                      email:
+                        type: string
+                      username:
+                        type: string
+                      _userId:
+                        type: number
+                      status:
+                        type: string
+                      createdAt:
+                        type: string
+                        format: date
+                      updatedAt:
+                        type: string
+                        format: date
+        "400":
+          description: data validation error
+  /api/v1/auth/login:
+    summary: User Login
+    security:
+      - BearerAuth: []
+    description: Login a user and get user info in response
+    post:
+      tags:
+        - Authentication
+      summary: Login credential
+      description: >
+        #### Login a user and retrieve a JWT token that can be used for
+        accessing protected endpoints.
+      requestBody:
+        description: required information to login the user
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                  description: User password
+                  example: seller
+              required:
+                - password
+              oneOf:
+                - properties:
+                    email:
+                      type: string
+                      format: email
+                      description: User's email address
+                      example: seller@gmail.com
+                  required:
+                    - email
+                - properties:
+                    username:
+                      type: string
+                      description: User's username
+                      example: john_doe
+                  required:
+                    - username
+      responses:
+        "200":
+          description: response body
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      _userId:
+                        type: number
+                      firstName:
+                        type: string
+                      lastName:
+                        type: string
+                      username:
+                        type: string
+                      email:
+                        type: string
+                      phoneNumber:
+                        type: string
+                      status:
+                        type: string
+                      imagePath:
+                        type: string
+                      createdAt:
+                        type: string
+                        format: date
+                      updatedAt:
+                        type: string
+                        format: date
+                  token:
+                    type: string
+        "400":
+          description: fill out all the required property
+        "404":
+          description: not found
+        "422":
+          description: invalid email
+  /api/v1/auth/forgetpassword:
+    summary: change user password if forgot it
+    post:
+      tags:
+        - Authentication
+      summary: Changing user password
+      description: >-
+        ### Changes the user password then sends an email to the user email that
+        entered
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+              required:
+                - email
+      responses:
+        "200":
+          description: Sending an email to user email account
+        "404":
+          description: no email found
+        "500":
+          description: error occur when sending email
+  /api/v1/auth/resetPassword/{token}:
+    post:
+      tags:
+        - Authentication
+      summary: Reset user password
+      description: reset password using unique token
+      parameters:
+        - name: token
+          in: path
+          schema:
+            type: string
+          required: true
+          description: the unique authentication for reseting password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                passwordConfirm:
+                  type: string
+      responses:
+        "200":
+          description: response body
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      _userId:
+                        type: number
+                      firstName:
+                        type: string
+                      lastName:
+                        type: string
+                      username:
+                        type: string
+                      email:
+                        type: string
+                      phone_number:
+                        type: string
+                      status:
+                        type: string
+                  token:
+                    type: string
+        "400":
+          description: fill out all property
+        "422":
+          description: invalid token
+  /api/v1/logout:
+    post:
+      tags:
+        - Authentication
+      summary: Log out user
+      security:
+      - BearerAuth: []
+      description: End point to log out user without any body
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+            example: Bearer {token}
+
+      responses:
+        "200":
+          description: Log out response depends on server
+          content:
+            application/json:
+              schema:
+                type: string
+        "401":
+          description: Unauthorize or Token expire or Invalid Token
+
+  /api/v1/seller/add:
+    post:
+      tags:
+        - Seller
+      summary: Add a new seller (JWT required)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                storeName:
+                  type: string
+                  description: Name of the seller's store
+                storeDescription:
+                  type: string
+                  description: Description of the seller's store
+                storeLogo:
+                  type: string
+                  description: URL of the seller's store logo
+                rating:
+                  type: number
+                  description: Seller's rating (e.g., 4.8)
+                storePhone:
+                  type: string
+                  description: Seller's phone number
+                verificationStatus:
+                  type: string
+                  description: Seller's verification status (e.g., Verified)
+                totalSales:
+                  type: integer
+                  description: Total number of sales by the seller
+                maliciousProp: # Assuming you want to keep this property
+                  type: string
+                  description: (Optional) Description of the maliciousProp property
+      responses:
+        "202": # Accepted: Request sent to admin for approval
+          description: "Request sent to admin for approval. Please wait for response."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Message indicating request sent for approval
+        "401": # Unauthorized: Expired JWT token
+          description: "Unauthorized: JWT token has expired."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating expired JWT token
+        "500": # Internal Server Error: Unexpected error (e.g., JWT validation error)
+          description: "Internal Server Error: Unexpected error processing request."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Generic error message
+
+  /api/v1/seller/{sellerId}:
+    get:
+      tags:
+        - Seller
+      summary: Get seller details by ID
+      security:
+      - BearerAuth: []
+      parameters:
+        - in: path
+          name: sellerId
+          required: true
+          description: ID of the seller
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Seller details found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: ID of the seller
+                  storeName:
+                    type: string
+                    description: Name of the seller's store
+                  storeDescription:
+                    type: string
+                    description: Description of the seller's store
+                  storeLogo:
+                    type: string
+                    description: URL of the seller's store logo
+                  rating:
+                    type: number
+                    description: Seller's rating (e.g., 4.8)
+                  storePhone:
+                    type: string
+                    description: Seller's phone number
+                  verificationStatus:
+                    type: string
+                    description: Seller's verification status (e.g., Verified)
+                  totalSales:
+                    type: integer
+                    description: Total number of sales by the seller
+                  # Add other properties as needed
+        "404":
+          description: Seller not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating
+        "401":
+          description: Unauthorize
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating
+        "403":
+          description: Forbidden User is not an admin
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating insufficient permissions
+
+  /api/v1/seller/me:
+    get:
+      tags:
+        - Seller
+      summary: Get current seller's details
+      security:
+      - BearerAuth: []
+      responses:
+        "200":
+          description: Seller details found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: ID of the seller
+                  storeName:
+                    type: string
+                    description: Name of the seller's store
+                  storeDescription:
+                    type: string
+                    description: Description of the seller's store
+                  storeLogo:
+                    type: string
+                    description: URL of the seller's store logo
+                  rating:
+                    type: number
+                    description: Seller's rating (e.g., 4.8)
+                  storePhone:
+                    type: string
+                    description: Seller's phone number
+                  verificationStatus:
+                    type: string
+                    description: Seller's verification status (e.g., Verified)
+                  totalSales:
+                    type: integer
+                    description: Total number of sales by the seller
+                  # Add other properties as needed
+        "401":
+          description: Unauthorized JWT token is invalid or missing
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating unauthorized access
+        "403":
+          description: Forbidden your are not a seller
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: error message
+  /api/v1/seller/update/me:
+    patch:
+      tags:
+        - Seller
+      summary: Update current seller's details
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                storeName:
+                  type: string
+                  description: Name of the seller's store
+                storeDescription:
+                  type: string
+                  description: Description of the seller's store
+                storePhone:
+                  type: string
+                  description: Seller's phone number
+                storeAddress:
+                  type: string
+                  description: Seller's address
+                website:
+                  type: string
+                  description: Seller's website URL
+      responses:
+        "200":
+          description: Seller details updated successfully
+        "401":
+          description: Unauthorized JWT token is invalid or missing
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating unauthorized access
+  /api/v1/category/add:
+    post:
+      tags:
+        - Categories
+      summary: Add a new category (Admin only)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                categoryName:
+                  type: string
+                  description: Name of the category
+                _parentId:
+                  type: integer
+                  nullable: true
+                  description: ID of the parent category (optional)
+      responses:
+        "201":
+          description: Category created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _categoryId:
+                    type: integer
+
+                    description: ID of the newly created category
+                  categoryName:
+                    type: string
+                    description: Name of the category
+                  _parentId:
+                    type: integer
+                    description: ID of the parent category (null if it's a main category)
+        "401":
+          description: Unauthorized JWT token is invalid or missing
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating unauthorized access
+
+  /api/v1/category/add/many:
+    post:
+      tags:
+        - Categories
+      summary: Add multiple categories (Admin only)
+      security:
+      - BearerAuth: []
+      description: >
+        if you want to create sub category, First, you should create parent category on previous route and then in this route create sub categories of that category.
+        You should create either many parent categories or sub categoreis
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  categoryName:
+                    type: string
+                    description: Name of the category
+                  _parentId:
+                    type: integer
+                    description: ID of the parent category (optional)
+      responses:
+        "201":
+          description: Categories created successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _categoryId:
+                      type: integer
+                      description: ID of the newly created category
+                    categoryName:
+                      type: string
+                      description: Name of the category
+                    _parentId:
+                      type: integer
+                      description: ID of the parent category (null if it's a main category)
+        "401":
+          description: Unauthorized JWT token is invalid or missing
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating unauthorized access
+  /api/v1/category:
+    get:
+      tags:
+        - Categories
+      summary: Get a list of all categories
+      responses:
+        "200":
+          description: List of categories retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      $ref: "#/components/schemas/CategoryWithChildren"
+
+  /api/v1/category/find/{catId}:
+    get:
+      tags:
+        - Categories
+      summary: Get a specific category by ID
+      parameters:
+        - in: path
+          name: catId
+          required: true
+          description: ID of the category
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Category retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Category"
+        "404":
+          description: Category not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating category not found
+
+  /api/v1/category/{id}:
+    patch:
+      tags:
+        - Categories
+      summary: Update a specific category (Admin only)
+      security:
+      - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: ID of the category
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                categoryName:
+                  type: string
+                  description: Name of the category
+                _parentId:
+                  type: integer
+                  description: ID of the parent category (optional)
+      responses:
+        "200":
+          description: Category updated successfully
+        "401":
+          description: Unauthorized JWT token is invalid or missing
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating unauthorized access
+        "403":
+          description: Forbidden User is not an admin
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating insufficient permissions
+  /api/v1/product/add/:
+    post:
+      tags:
+        - Products
+      summary: Add a new product
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                productName:
+                  type: string
+                  description: Name of the product
+                description:
+                  type: object # Flexible description object
+                  properties:
+                    color:
+                      type: string
+                    size:
+                      type: string
+                    model:
+                      type: string
+                    # Add other potential description properties
+                price:
+                  type: number
+                  description: Price of the product
+                stockQuantity:
+                  type: integer
+                  description: Quantity of the product in stock
+                imagePath:
+                  type: string
+                  description: URL of the product image
+                status:
+                  type: string
+                  description: Status of the product (e.g., available, unavailable)
+                categoryName:
+                  type: string
+                  description: Name of the category the product belongs to
+      responses:
+        "201":
+          description: Product created successfully
+        "401":
+          description: Unauthorized JWT token is invalid or missing
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating unauthorized access
+        "403":
+          description: Forbidden, only seller can create product
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating forbidden access
+        "400":
+          description: valication error, also you could not create product with general category
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: only use specific category and enter currect values
+        "404":
+          description: if category does not exist
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: category should be exist
+
+  /api/v1/product/id/{id}:
+    get:
+      tags:
+        - Products
+      summary: Get a specific product by ID
+      description: Get product by its it
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Product retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _productId:
+                    type: integer
+                    description: ID of the product
+                  productName:
+                    type: string
+                    description: Name of the product
+                  description:
+                    type: object
+                    properties:
+                      color:
+                        type: string
+                      size:
+                        type: string
+                      model:
+                        type: string
+                      # Add other potential description properties
+                  price:
+                    type: number
+                    description: Price of the product
+                  stockQuantity:
+                    type: integer
+                    description: Quantity of the product in stock
+                  imagePath:
+                    type: string
+                    description: URL of the product image
+                  status:
+                    type: string
+                    description: Status of the product (e.g., available, unavailable)
+                  salesCount:
+                    type: integer
+                    description: Number of sales
+                  createdAt:
+                    type: string
+                    format: date-time
+                    description: Timestamp of product creation
+                  updatedAt:
+                    type: string
+                    format: date-time
+                    description: Timestamp of the last update
+                  _categoryId:
+                    type: integer
+                    description: ID of the category
+                  _sellerId:
+                    type: integer
+                    description: ID of the seller
+                  ProductDiscount:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      Discount:
+                        type: object
+                        properties:
+                          value:
+                            type: number
+                          discountType:
+                            type: string
+                  Rating:
+                    type: object
+                    properties:
+                      rating:
+                        type: number
+                      ratingCount:
+                        type: integer
+                  Reviews:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        comment:
+                          type: string
+        "404":
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating product not found
+  /api/v1/product/categories/{categoryName}:
+    get:
+      tags:
+        - Products
+      summary: Get products
+      description: Get all products by specific category
+      parameters:
+        - in: path
+          name: categoryName
+          required: true
+          description: ID of the product
+          schema:
+            type: string
+        - in: query
+          name: page
+          description: pagination
+          schema:
+            type: integer
+        - in: query
+          name: limit
+          description: limitation using with pagination
+          schema:
+            type: integer
+        - in: query
+          name: sort
+          description: sorting (newest = 1, mostSeller = 2, expensive = 3, inexpensive = 4 )
+          schema:
+            type: integer
+        - in: query
+          name: order
+          description: ordering by ASC and DESC
+          schema:
+            type: string
+      responses:
+        "200":
+          description: all products related with specific category
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    data:
+                      type: object
+                      properties:
+                        _productId:
+                          type: integer
+                          description: ID of the product
+                        productName:
+                          type: string
+                          description: Name of the product
+                        price:
+                          type: number
+                          description: Price of the product
+                        stockQuantity:
+                          type: integer
+                          description: Quantity of the product in stock
+                        imagePath:
+                          type: string
+                          description: URL of the product image
+                        status:
+                          type: string
+                          description: Status of the product (e.g., available, unavailable)
+                        salesCount:
+                          type: integer
+                          description: Number of sales
+                        createdAt:
+                          type: string
+                          format: date-time
+                          description: Timestamp of product creation
+                        updatedAt:
+                          type: string
+                          format: date-time
+                          description: Timestamp of the last update
+                        _categoryId:
+                          type: integer
+                          description: ID of the category
+                    total:
+                      type: integer
+  /api/v1/product/update/{id}:
+    patch:
+      tags:
+        - Products
+      summary: Update a specific product
+      security:
+      - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: ID of the product
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                productName:
+                  type: string
+                  description: Name of the product
+                description:
+                  type: object
+                  properties:
+                    color:
+                      type: string
+                price:
+                  type: number
+                  description: Price of the product
+                stockQuantity:
+                  type: integer
+                  description: Quantity of the product in stock
+                imagePath:
+                  type: string
+                  description: URL of the product image
+                status:
+                  type: string
+                  description: Status of the product (e.g., available, unavailable)
+      responses:
+        "200":
+          description: Product updated successfully
+        "404":
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating product not found
+        "403":
+          description: Forbidden, you are not a seller or the seller of that product, is another person
+  /api/v1/product/del/{id}:
+    delete:
+      tags:
+        - Products
+      summary: Delete a specific product (Seller only)
+      security:
+      - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: ID of the product
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Product deleted successfully
+        "401":
+          description: Unauthorized JWT token is invalid or missing
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating unauthorized access
+        "403":
+          description: Forbidden User is not the seller of the product
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating insufficient permissions
+        "404":
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating product not found
+  /api/v1/product/myproducts:
+    get:
+      tags:
+        - Products
+      summary: Get a list of the seller's products
+      security:
+      - BearerAuth: []
+      responses:
+        "200":
+          description: List of seller's products retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties:
+                    data:
+                      type: object
+                      properties:
+                        _productId:
+                          type: integer
+                          description: ID of the product
+                        productName:
+                          type: string
+                          description: Name of the product
+                        price:
+                          type: number
+                          description: Price of the product
+                        stockQuantity:
+                          type: integer
+                          description: Quantity of the product in stock
+                        imagePath:
+                          type: string
+                          description: URL of the product image
+                        status:
+                          type: string
+                          description: Status of the product (e.g., available, unavailable)
+                        salesCount:
+                          type: integer
+                          description: Number of sales
+                        createdAt:
+                          type: string
+                          format: date-time
+                          description: Timestamp of product creation
+                        updatedAt:
+                          type: string
+                          format: date-time
+                          description: Timestamp of the last update
+                        _categoryId:
+                          type: integer
+                          description: ID of the category
+                        ProductDiscount:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                            Discount:
+                              type: object
+                              properties:
+                                value:
+                                  type: number
+                                discountType:
+                                  type: string
+                    total:
+                      type: integer
+        "401":
+          description: Unauthorized JWT token is invalid or missing
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating unauthorized access
+        "403":
+          description: Forbidden User is not a seller
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating insufficient permissions
+  /api/v1/product/search:
+    get:
+      tags:
+        - Products
+      summary: Search for products
+      parameters:
+        - in: query
+          name: s
+          description: Search query
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: page
+          description: Page number
+          required: false
+          schema:
+            type: integer
+        - in: query
+          name: limit
+          description: Number of products per page
+          required: false
+          schema:
+            type: integer
+        - in: query
+          name: sort
+          description: Sorting criteria
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Products found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        _productId:
+                          type: integer
+                        productName:
+                          type: string
+                        price:
+                          type: string
+                        imagePath:
+                          type: string
+                        _categoryId:
+                          type: integer
+                          nullable: true
+                        ProductDiscount:
+                          type: object
+                          nullable: true
+                        Rating:
+                          type: object
+                          nullable: true
+                  total:
+                    type: integer
+        "404":
+          description: No products found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message indicating no products found
+  /api/v1/discount/apply:
+    post:
+      tags:
+        - Discounts
+      summary: Apply a discount (sellers only)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                discountName:
+                  type: string
+                discountType:
+                  type: string
+                  enum: [percentage, amount]
+                value:
+                  type: number
+                endDate:
+                  type: string
+                  format: date-time
+                isActive:
+                  type: boolean
+
+      responses:
+        "201":
+          description: Discount created successfully
+        "400":
+          description: Invalid discount data or missing required fields
+        "401":
+          description: Unauthorized JWT token is invalid or missing
+        "403":
+          description: Forbidden Seller has reached maximum discount limit
+  /api/v1/discount/apply/product:
+    post:
+      tags:
+        - Discounts
+      summary: Apply an existing discount to a product (sellers only)
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                discountName:
+                  type: string
+                productId:
+                  type: integer
+      responses:
+        "201":
+          description: Discount applied successfully
+        "400":
+          description: Invalid discount name or product ID
+        "401":
+          description: Unauthorized JWT token is invalid or missing
+        "403":
+          description: Forbidden Discount is not applicable to the product
+        "404":
+          description: Discount or product not found
+        "422":
+          description: if already applied discount on that product
+  /api/v1/discount/update/{discountId}:
+    patch:
+      tags:
+        - Discounts
+      summary: Update a discount (sellers only)
+      security:
+      - BearerAuth: []
+      parameters:
+        - name: discountId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                discountName:
+                  type: string
+                discountType:
+                  type: string
+                  enum: [percentage, amount]
+                value:
+                  type: number
+                endDate:
+                  type: string
+                  format: date-time
+                isActive:
+                  type: boolean
+      responses:
+        "200":
+          description: Discount updated successfully
+        "400":
+          description: Invalid discount data or missing required fields
+        "401":
+          description: Unauthorized JWT token is invalid or missing
+        "403":
+          description: Forbidden Seller cannot update this discount
+        "404":
+          description: Discount not found
+  /api/v1/discount/mydiscounts:
+    get:
+      tags:
+        - Discounts
+      summary: Get a seller's discounts (sellers only)
+      security:
+      - BearerAuth: []
+      responses:
+        "200":
+          description: Seller's discounts retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    discountId:
+                      type: integer
+                    discountName:
+                      type: string
+                    discountType:
+                      type: string
+                    value:
+                      type: number
+                    endDate:
+                      type: string
+                      format: date-time
+                    isActive:
+                      type: boolean
+                    createdAt:
+                      type: string
+                      format: date-time
+                    updatedAt:
+                      type: string
+                      format: date-time
+        "401":
+          description: Unauthorized JWT token is invalid or missing
+        "404":
+          description: discount not found
+        "403":
+          description: your are not a seller
+  /discount/del/{discountId}:
+    delete:
+      tags:
+        - Discounts
+      summary: Delete a discount (sellers only)
+      security:
+      - BearerAuth: []
+      parameters:
+        - name: discountId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Discount deleted successfully
+        "400":
+          description: Invalid discount ID
+        "401":
+          description: Unauthorized JWT token is invalid or missing
+        "403":
+          description: Forbidden Seller cannot delete this discount
+        "404":
+          description: Discount not found
+  /reviews/create:
+    post:
+      tags:
+        - Reviews
+      summary: Create a review for a product
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rate:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                comment:
+                  type: string
+                productId:
+                  type: integer
+      responses:
+        "201":
+          description: Review created successfully
+        "400":
+          description: Invalid review data or missing required fields
+        "401":
+          description: Unauthorized JWT token is invalid or missing
+        "404":
+          description: Product not found
+  /reviews/{productId}:
+    get:
+      tags:
+        - Reviews
+      summary: Get reviews for a product
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Reviews retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _reviewId:
+                      type: integer
+                    comment:
+                      type: string
+                    status:
+                      type: string
+                    createdAt:
+                      type: string
+                      format: date-time
+                    updatedAt:
+                      type: string
+                      format: date-time
+                    _productId:
+                      type: integer
+                    _userId:
+                      type: integer
+        "400":
+          description: Invalid product ID
+        "404":
+          description: Product not found
+  /cart/add-to-cart:
+    post:
+      tags:
+        - ShopCart
+      summary: Add a product to the cart
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                _productId:
+                  type: integer
+      responses:
+        "201":
+          description: Product added to cart successfully
+        "400":
+          description: Product is already in your cart
+        "401":
+          description: Unauthorized JWT token is invalid or missing
+        "403":
+          description: Forbidden Product is out of stock
+        "404":
+          description: Product not found
+  /cart/getcarts:
+    get:
+      tags:
+        - ShopCart
+      summary: Get a user's shopping cart
+      security:
+      - BearerAuth: []
+      responses:
+        "200":
+          description: Cart retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _cartId:
+                    type: integer
+                  createdAt:
+                    type: string
+                    format: date-time
+                  updatedAt:
+                    type: string
+                    format: date-time
+                  _userId:
+                    type: integer
+                  Products:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        _productId:
+                          type: integer
+                        productName:
+                          type: string
+                        price:
+                          type: string # Adjust type based on your currency format
+                        imagePath:
+                          type: string
+                        status:
+                          type: string
+                        stockQuantity:
+                          type: integer
+                        ProductDiscount:
+                          nullable: true
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                            Discount:
+                              type: object
+                              properties:
+                                value:
+                                  type: number
+                                discountType:
+                                  type: string
+                        Item:
+                          nullable: true
+                          type: object
+                          properties:
+                            quantity:
+                              type: integer
+                            price:
+                              type: string # Adjust type based on your currency format
+                            _cartItemId:
+                              type: integer
+                  payablePrice:
+                    type: string # Adjust type based on your currency format
+                  totalAmount:
+                    type: string # Adjust type based on your currency format
+        "401":
+          description: Unauthorized JWT token is invalid or missing
+  /cart/updatecartitem:
+    patch:
+      tags:
+        - ShopCart
+      summary: Update a cart item
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                side:
+                  type: string
+                  enum: [up, down]
+      responses:
+        "200":
+          description: Cart item updated successfully
+        "400":
+          description: Invalid cart item ID or action
+        "401":
+          description: Unauthorized JWT token is invalid or missing
+        "404":
+          description: Cart item not found
+  /cart/{cartItemId}:
+    delete:
+      tags:
+        - ShopCart
+      summary: Delete a cart item
+      security:
+      - BearerAuth: []
+      parameters:
+        - name: cartItemId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Cart item deleted successfully
+        "400":
+          description: Invalid cart item ID
+        "401":
+          description: Unauthorized JWT token is invalid or missing
+        "403":
+          description: Forbidden User cannot delete this cart item
+        "404":
+          description: Cart item not found
+  /api/v1/user/me:
+    get:
+      tags:
+        - Users
+      summary: Get current user information
+      security:
+      - BearerAuth: []
+      responses:
+        "200":
+          description: User information retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      _userId:
+                        type: integer
+                      firstName:
+                        type: string
+                      lastName:
+                        type: string
+                      username:
+                        type: string
+                      email:
+                        type: string
+                      phone_number:
+                        type: string # Might be null
+                      status:
+                        type: string
+        "401":
+          description: >
+            Unauthorized JWT token is invalid or missing
+
+  /api/v1/user/update-password:
+    patch:
+      tags:
+        - Users
+      summary: Update user password
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                currentPassword:
+                  type: string
+                newPassword:
+                  type: string
+                newPasswordConfirm:
+                  type: string
+              required:
+                - currentPassword
+                - newPassword
+                - newPasswordConfirm
+      responses:
+        "200":
+          description: Password updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      _userId:
+                        type: integer
+                      firstName:
+                        type: string
+                      lastName:
+                        type: string
+                      username:
+                        type: string
+                      email:
+                        type: string
+                      phone_number:
+                        type: string # Might be null
+                      status:
+                        type: string
+        "400":
+          description: Invalid password data or missing required fields
+        "401":
+          description: Unauthorized Current password is incorrect
+  /api/v1/user/update:
+    patch:
+      tags:
+        - Users
+      summary: Update user information
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                username:
+                  type: string
+                email:
+                  type: string
+                phoneNumber:
+                  type: string
+      responses:
+        "200":
+          description: User information updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      _userId:
+                        type: integer
+                      firstName:
+                        type: string
+                      lastName:
+                        type: string
+                      username:
+                        type: string
+                      email:
+                        type: string
+                      phone_number:
+                        type: string # Might be null
+                      status:
+                        type: string
+        "400":
+          description: Invalid user data or missing required fields
+        "401":
+          description: Unauthorized JWT token is invalid or missing
+        "409":
+          description: Conflict Username or email already exists
+  /api/v1/user/setaddress:
+    post:
+      tags:
+        - Users
+      summary: Create a new address
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                address:
+                  type: string
+                city:
+                  type: string
+                province:
+                  type: string
+                phoneNumber:
+                  type: string
+                postalCode:
+                  type: string
+      responses:
+        "201":
+          description: Address created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      _addressId:
+                        type: integer
+                      address:
+                        type: string
+                      city:
+                        type: string
+                      province:
+                        type: string
+                      phoneNumber:
+                        type: string
+                      postalCode:
+                        type: string
+                      _userId:
+                        type: integer
+        "400":
+          description: Invalid address data or missing required fields
+        "401":
+          description: Unauthorized JWT token is invalid or missing
+  /api/v1/user/getuseraddress:
+    get:
+      tags:
+        - Users
+      summary: Get user addresses
+      security:
+      - BearerAuth: []
+      responses:
+        "200":
+          description: Addresses retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        _addressId:
+                          type: integer
+                        address:
+                          type: string
+                        city:
+                          type: string
+                        province:
+                          type: string
+                        phoneNumber:
+                          type: string
+                        postalCode:
+                          type: string
+                        _userId:
+                          type: integer
+        "401":
+          description: Unauthorized JWT token is invalid or missing
+        "404":
+          description: Nothing found
+
+  /api/v1/payment/takePayment:
+    post:
+      tags:
+        - Paymenting
+      summary: Initiate payment and create order
+      security:
+      - BearerAuth: []
+      responses:
+        "200":
+          description: Payment initiated and order created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orderId:
+                    type: integer
+                  paymentStatus:
+                    type: string
+                  # Add other order properties as needed
+        "400":
+          description: Payment error or invalid cart
+        "401":
+          description: Unauthorized JWT token is invalid or missing
+        "403":
+          description: Forbidden User cannot place order
+        "404":
+          description: Cart not found or empty
+
+  /api/v1/invoice/myinvoice:
+    get:
+      tags:
+        - Invoice
+      summary: Get user/seller invoices
+      security:
+      - BearerAuth: []
+      parameters:
+        - name: invoiceId
+          in: query
+          schema:
+            type: integer
+        - name: as
+          in: query
+          schema:
+            type: string
+            enum: [user, seller]
+      responses:
+        "200":
+          description: Invoices retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _invoiceId:
+                      type: integer
+                    invoiceDate:
+                      type: string
+                      format: date-time
+                    paymentDate:
+                      type: string
+                      format: date-time
+                    items:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          _id:
+                            type: integer
+                          price:
+                            type: number
+                          quantity:
+                            type: integer
+                          unitPrice:
+                            type: number
+                          _productId:
+                            type: integer
+                          productName:
+                            type: string
+                          discountValue:
+                            type: number
+                          priceWithDiscount:
+                            type: number
+                    totalAmount:
+                      type: number
+                    subTotalAmount:
+                      type: number
+                    shippingAddress:
+                      type: string
+                    status:
+                      type: string
+                    createdAt:
+                      type: string
+                      format: date-time
+                    updatedAt:
+                      type: string
+                      format: date-time
+                    _sellerId:
+                      type: integer
+                    _userId:
+                      type: integer
+                    _orderId:
+                      type: integer
+        "400":
+          description: Invalid invoice ID or `as` parameter
+        "401":
+          description: Unauthorized JWT token is invalid or missing
+        "403":
+          description: Forbidden User cannot access this invoice
+        "404":
+          description: Invoice not found
+  /api/v1/orders/getmyorders:
+    get:
+      tags:
+        - Orders
+      summary: Get user orders
+      security:
+      - BearerAuth: []
+      responses:
+        "200":
+          description: Orders retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    _orderId:
+                      type: integer
+                    orderDate:
+                      type: string
+                      format: date-time
+                    totalAmount:
+                      type: number
+                    subTotalAmount:
+                      type: number
+                    status:
+                      type: string
+                    shippingMethod:
+                      type: string
+                    shippingCost:
+                      type: number
+                    createdAt:
+                      type: string
+                      format: date-time
+                    updatedAt:
+                      type: string
+                      format: date-time
+                    _userId:
+                      type: integer
+        "401":
+          description: Unauthorized JWT token is invalid or missing
+
+  /admin/verifySeller:
+    patch:
+      tags:
+        - Admins
+      summary: Verify or reject a seller application
+      security:
+        - bearerAuth: []  # Assuming you're using JWT authentication for admins
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: integer
+                status:
+                  type: string
+                  enum: [accept, reject]
+                reasons:
+                  type: string
+              required:
+                - userId
+                - status
+                - reasons
+      responses:
+        '200':
+          description: Seller verification status updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                seller:
+                  type: object  # Define the seller schema here
+        '400':
+          description: Invalid user ID or status
+        '401':
+          description: Unauthorized JWT token is invalid or missing
+        '403':
+          description: Forbidden User is not an admin
+        '404':
+          description: User not found

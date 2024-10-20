@@ -37,7 +37,7 @@ export const Category = sequelize.define(
         const category = await Category.findByPk(records[0].get("_parentId"));
         records.forEach((el) => {
           el.dataValues.path = el.get("_parentId")
-            ? `${category.get("path")}/${el.get("_parentId")}`
+            ? `${category.get("path")}/${el.get("categoryName")}`
             : `/${el.dataValues.categoryName}`;
         });
       },
