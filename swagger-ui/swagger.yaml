@@ -2176,7 +2176,7 @@ paths:
         "401":
           description: Unauthorized JWT token is invalid or missing
 
-  /admin/verifySeller:
+  /api/v1/admin/verifySeller:
     patch:
       tags:
         - Admins
@@ -2222,7 +2222,7 @@ paths:
         '404':
           description: User not found
 
-  /notif/seller:
+  /api/v1/notif/seller:
     get:
       tags:
         - Notifications
@@ -2255,7 +2255,7 @@ paths:
           description: Forbidden only seller can do this action
         '404':
           description: Not found
-  /notif/admin:
+  /api/v1/notif/admin:
     get:
       tags:
         - Notifications
